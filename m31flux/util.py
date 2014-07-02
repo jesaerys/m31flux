@@ -1,3 +1,25 @@
+"""
+
+==============
+`m31flux.util`
+==============
+
+General utilities.
+
+
+Functions
+---------
+
+================== =========================================================
+`safe_mkdir`       Create a directory only if it does not already exist.
+`safe_symlink`     Create a symlink only if it does not already exist.
+`calc_flux`        Calculate flux in a given filter for the SFH of the given
+                   cell.
+`make_brick_image` Apply a function to all cells in given brick, then
+                   assign each cell to a pixel to assemble an image.
+================== =========================================================
+
+"""
 import astrogrid
 import astropy.io.fits
 import astropy.stats.funcs

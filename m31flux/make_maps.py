@@ -1,24 +1,55 @@
 """
+
+===================
+`m31flux.make_maps`
+===================
+
+Create modeled flux maps from SFH data.
+
+
+Constants
+---------
+
+============= ======================================================
+`FSPS_KWARGS` The IMF to use for all FSPS stellar population models.
+============= ======================================================
+
+
+Functions
+---------
+
+======================= ===================================================
+`calc_flux_mod_fuv_red` Calculate reddened FUV flux for the given brick and
+                        cell.
+`calc_flux_mod_fuv_int` Calculate intrinsic FUV flux for the given brick
+                        and cell.
+======================= ===================================================
+
 """
+import astrogrid
 import os
 
-from m31flux import config, util
+from . import config, util
 
 
 
-FSPS_KWARGS = {'imf_type': config.IMF_TYPE}
+FSPS_KWARGS = {'imf_type': astrogrid.flux.IMF_TYPE[config.IMF]}
+"""The IMF to use for all FSPS stellar population models."""
 
 
 
 # FUV
 # ---
+
 def calc_flux_mod_fuv_red(brick, cell):
+    """Calculate reddened FUV flux for the given brick and cell."""
     av, dav = config.EXTPAR_DICT[(brick, cell)]
     return util.calc_flux(brick, cell, 'galex_fuv', dmod=config.DMOD,
                           av=av, dav=dav, fsps_kwargs=FSPS_KWARGS)
 
 
 def calc_flux_mod_fuv_int(brick, cell):
+    """Calculate intrinsic FUV flux for the given brick and cell."""
     return util.calc_flux(brick, cell, 'galex_fuv', agelimdmod=config.DMOD,
                           fsps_kwargs=FSPS_KWARGS)
 

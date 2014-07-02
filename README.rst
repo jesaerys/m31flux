@@ -1,11 +1,22 @@
-=====================================================================
-Synthetic broadband flux maps of M31 from resolved optical photometry
-=====================================================================
+m31flux
+=======
 
-This directory contains all of the code used for the M31 flux maps project.
-The data processing and analysis steps are outlined in this README, and
-further details documented in the actual code.
+Synthetic broadband flux maps of M31 from resolved optical photometry.
 
+(Jacob E. Simones, Julianne J. Dalcanton, Andrew E. Dolphin, Alexia R.
+Lewis, Evan D. Skillman, Daniel R. Weisz, Benjamin F. Williams)
+
+This package contains all of the code used for the M31 flux maps project.
+Details regarding the data processing and analysis steps are documented in
+the individual modules.
+
+`m31flux` requires these packages:
+
+- `astrogrid <http://github.com/jesaerys/astrogrid>`_
+- `astropy <http://www.astropy.org>`_
+- `match-wrapper <http://github.com/jesaerys/match-wrapper>`_
+- `montage-wrapper <http://www.astropy.org/montage-wrapper>`_
+- `numpy <http://www.numpy.org>`_
 
 
 SFH data
@@ -90,22 +101,20 @@ The details as reported by Alexia:
 I received the following files from Alexia for each brick:
 
 - List of RA,dec coordinates of the corners of all cells in the brick (file
-  kind `corners`)
+  kind 'corners')
 - List of best-fit Av,dAv extinction parameters of all cells in the brick
-  (file kind `extpar`)
+  (file kind 'extpar')
 - For each cell,
 
-  - F475W,F814W ".gst" photometry file (kind `phot`), and the SFH and CMD
-    calcsfh output files (kinds `sfh` and `cmd`) from the best-fit SFH
+  - F475W,F814W ".gst" photometry file (kind 'phot'), and the SFH and CMD
+    calcsfh output files (kinds 'sfh' and 'cmd') from the best-fit SFH
     solution
-
 
 
 Process raw calcsfh data
 ========================
-**process_sfh.py:** The `sfh` files were processed with zcombine to create
-tables of SFR versus age (`bestzcb`).
-
+**process_sfh.py:** The 'sfh' files were processed with zcombine to create
+tables of SFR versus age ('bestzcb').
 
 
 Create synthetic flux maps
@@ -117,10 +126,19 @@ a modeled flux map of M31 over the PHAT survey area.
 
 The following bands were considered:
 
-- GALEX FUV (`mod_fuv_int` for intrinsic flux, `mod_fuv_red` for reddened
-  flux based on the best-fit extinction parameters) and NUV (`mod_nuv_int`
-  for intrinsic, `mod_nuv_red` for reddened)
+- GALEX FUV ('mod_fuv_int' for intrinsic flux, 'mod_fuv_red' for reddened
+  flux based on the best-fit extinction parameters) and NUV ('mod_nuv_int'
+  for intrinsic, 'mod_nuv_red' for reddened)
 
 Images from the GALEX Deep Imaging Survey (DIS) were used to produce maps
-of observed FUV (`galex_fuv`) and NUV (`galex_nuv`) flux.
+of observed FUV ('galex_fuv') and NUV ('galex_nuv') flux.
 
+
+Issues
+======
+- An exclude gate was used to mask out the RGB while fitting the CMDs. Has
+  anyone assessed the maximum reliable age limit this places on the SFHs?
+  A quick method would be to find the oldest isochrone that is visible
+  outside the exclude gate.
+
+- Create Spitzer 24um images, too?

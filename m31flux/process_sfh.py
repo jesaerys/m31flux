@@ -1,16 +1,39 @@
 """
+
+=====================
+`m31flux.process_sfh`
+=====================
+
 Process calcsfh output files using zcombine.
+
+
+Functions
+---------
+
+============== =========================================================
+`make_bestzcb` Create zcombine files for the best SFH solutions only, no
+               uncertainties.
+============== =========================================================
 
 """
 import os
 import match_wrapper as match
 
-from sfhmaps_phat import config, util
+from . import config, util
 
 
 def make_bestzcb(norun=False):
     """Create zcombine files for the best SFH solutions only, no
     uncertainties.
+
+    Parameters
+    ----------
+    norun : bool, optional
+        If True, zcombine won't actually be executed. Default is False.
+
+    Returns
+    -------
+    None
 
     """
     sfhfile_list = config.path('sfh', fillsubfield=False)

@@ -1,8 +1,8 @@
 """
 
-=====================
+================
 `m31flux.config`
-=====================
+================
 
 Configuration for `m31flux`.
 
@@ -10,9 +10,10 @@ This module contains constants and functions that locate data (both
 existing files and files created during analysis) and define how it is
 structured. The main features are,
 
-1. A `path` function, which keeps track of all project files. Paths to
-   particular files can be changed and new files can be added by modifying the
-   `_kind_dict`.
+1. A `path` function, which keeps track of all project files. This
+   completely eliminates the need to hardcode filenames in any module or
+   analysis script. Paths to particular files can be changed and new files
+   can be added by modifying the `_KIND_DICT`.
 
 2. Other project-specific things like galaxy and modeling parameters and
    parsers for nonstandard files.
@@ -22,15 +23,45 @@ structured. The main features are,
 
 
 Constants
-=========
+---------
+
+================ =========================================================
+BRICK_LIST       List of all PHAT bricks available in the project in
+                 numerical order.
+NROW             Number of rows in a brick grid.
+NCOL             Number of columns in a brick grid.
+CELL_LIST        List of all cells in a brick grid in numerical order.
+SORT             Indices that sort a list of cells in numerical order to
+                 grid order, and vice versa.
+GALEX_FIELD_LIST List of all GALEX DIS fields (or tiles) covering the PHAT
+                 survey area, in numerical order.
+GALEX_CHIP_X0    Approximate x pixel coordinate of chip center.
+GALEX_CHIP_Y0    Approximate y pixel coordinate of chip center.
+GALEX_CHIP_RAD   Approximate chip radius in pixels, slightly undersized.
+DMOD             Distance modulus.
+DIST_PC          Distance in pc.
+DIST_CM          Distance in cm.
+IMF              Initial mass function.
+_KIND_DICT       Path elements used to build paths to the different file
+                 kinds.
+EXTPAR_DICT      Dictionary of the best-fit Av and dAv extinction
+                 parameters for every cell.
+MISSING_CELLS    List of (brick, cell) tuples for where there is no data.
+================ =========================================================
 
 
 Functions
-=========
+---------
+
+================ =======================================================
+open_extparfile  Create a table from a file of kind 'extpar'.
+open_cornersfile Create a table from a file of kind 'corners'.
+cornergrid       Reshape a table of cell corner coordinates into a grid.
+================ =======================================================
 
 
 Brick grid model
-================
+----------------
 
 There are 23 bricks in the PHAT survey, labeled by integer starting with 1.
 Each brick is divided into an n*m grid, and the grid cells are labeled by
@@ -64,19 +95,6 @@ cell. Rather, in a flattened n*m array (e.g., `numpy.ravel`), cell
 ``(n-1)*m+1`` is first and cell m is last. The cell numbers are merely
 labels that happen to be integers.
 
-
-
-###
-SFHs were derived for the cells of all bricks listed in `BRICK_LIST`,
-except for any cells listed in `MISSING_CELLS` (see `_find_missing_cells`).
-The SFHs were calculated using MATCH, assuming the Av,dAv extinction model.
-The `EXTPAR_DICT` dictionary contains the extinction parameter values for
-each cell (see also `_load_extpar_dict`).
-
-The `path` function locates all data in the project so that no path names
-have to be hardcoded in any modules or analyis scripts.
-###
-
 """
 import astrogrid
 import astropy.table
@@ -87,6 +105,7 @@ import os
 
 # PHAT bricks and the brick grid system
 # =====================================
+
 BRICK_LIST = np.array([2]+range(4,24))
 """List of all PHAT bricks available in the project in numerical order."""
 
@@ -113,6 +132,7 @@ description of brick grid coordinate conventions.
 
 # GALEX
 # =====
+
 GALEX_FIELD_LIST = [0, 7, 8, 9, 10]
 """List of all GALEX DIS fields (or tiles) covering the PHAT survey area,
 in numerical order.
@@ -135,6 +155,7 @@ GALEX_CHIP_RAD = 1400
 
 # M31 and other parameters
 # ========================
+
 DMOD = 24.47
 """Distance modulus.
 
@@ -156,13 +177,14 @@ IMF = 'Kroupa'
 
 # Paths
 # =====
-_PROJECT_DIR = '/Users/Jake/Research/PHAT/sfhmaps-phat'
+
+_PROJECT_DIR = '/Users/Jake/Research/PHAT/m31flux'
 _SFH_DIR = os.path.join(_PROJECT_DIR, 'sfh')
 _ANALYSIS_DIR = os.path.join(_PROJECT_DIR, 'analysis')
 _GALEX_DIR = '/Users/Jake/Research/Storage/M31/GALEX/DIS'
 
 
-_kind_dict = {
+_KIND_DICT = {
     'extpar':  (_SFH_DIR, 'B{0:02d}', 'b{0:02d}_region_AvdAv.dat'),
     'corners': (_SFH_DIR, 'B{0:02d}', 'M31-B{0:02d}_15x30_subregion-exact-vertices.dat'),
     'phot':    (_SFH_DIR, 'B{0:02d}', 'phot', 'M31-B{0:02d}_15x30-{1:03d}.gst.match'),
@@ -264,13 +286,13 @@ def _path(kind, extpar_dict, **kwargs):
         represent more specific organizational terms for different kinds of
         files:
 
-        ================ ===== ========
+        ================ ===== =============================
         kind category    field subfield
-        ================ ===== ========
+        ================ ===== =============================
         PHAT             brick field
-        PHAT brick grids brick cell
+        PHAT brick grids brick cell (a.k.a. pixel or region)
         GALEX            tile
-        ================ ===== ========
+        ================ ===== =============================
 
     missing : list, optional
         List of (brick, cell) tuples for which no SFH data are available
@@ -351,9 +373,9 @@ def _path(kind, extpar_dict, **kwargs):
         Observed NUV flux from GALEX.
 
     """
-    # Follow any links in _kind_dict
-    while not astrogrid.util.islistlike(_kind_dict[kind]):
-        kind = _kind_dict[kind]
+    # Follow any links in _KIND_DICT
+    while not astrogrid.util.islistlike(_KIND_DICT[kind]):
+        kind = _KIND_DICT[kind]
 
     # List of fields
     if kind.endswith('.add') or kind.endswith('.hdr'):
@@ -388,7 +410,7 @@ def _path(kind, extpar_dict, **kwargs):
     # List of paths
     missing = kwargs.get('missing', [])
     path_list = []
-    pth = os.path.join(*_kind_dict[kind])
+    pth = os.path.join(*_KIND_DICT[kind])
     for fld in field:
         for sfld in subfield:
             if (fld, sfld) in missing:
@@ -415,16 +437,37 @@ def _path(kind, extpar_dict, **kwargs):
 
 # Parsers
 # =======
+
 def open_extparfile(filename):
     """Create a table from a file of kind 'extpar'.
 
-    An 'extpar' file contains three columns: the cell number and the Av and
-    dAv parameter values for the cell. There is one row per cell, and the
-    cells are listed in increasing order consistent with output from
-    `grid2list`. Cells without SFH data have Av and dAv both set to 99.
+    An 'extpar' file contains the best-fit Av and dAv extinction parameters
+    for all cells in a single brick. There are three columns: cell number,
+    Av, and dAv. There is one row per cell, and the cells are listed in
+    numerical order. Cells without SFH data have their cell number set to 0
+    and Av and dAv both set to 99.
 
-    Returns an `astropy.table.Table` instance with columns 'cell', 'av',
-    and 'dav'.
+    Parameters
+    ----------
+    filename : str
+        Path to the file.
+
+    Returns
+    -------
+    astropy.table.Table
+        See Notes for the columns.
+
+    Notes
+    -----
+    The columns in the output table are,
+
+    ======= ====================================================
+    columns description
+    ======= ====================================================
+    cell    Cell number
+    av      Av (foreground V-band) extinction parameter value
+    dav     dAv (differential V-band) extinction parameter value
+    ======= ====================================================
 
     """
     table = astropy.table.Table.read(filename, format='ascii')
@@ -438,13 +481,38 @@ def open_cornersfile(filename):
     """Create a table from a file of kind 'corners'.
 
     A 'corners' file contains eight columns for the RA and dec coordinates
-    of each corner of each cell in a brick. The corners are numbered
+    of each corner of each cell in a single brick. The corners are numbered
     clockwise with 1 at the xmin,ymax corner and 4 at the xmin,ymin corner.
-    There is one row per cell, and the cells are listed in increasing order
-    consistent with output from `grid2list`.
+    See the main documentation of `m31flux.config` for a description of
+    brick grid coordinate conventions. There is one row per cell, and the
+    cells are listed in numerical order.
 
-    Returns an `astropy.table.Table` instance with columns 'RA1', 'dec1',
-    'RA2', 'dec2', 'RA3', 'dec3', 'RA4', and 'dec4'.
+    Parameters
+    ----------
+    filename : str
+        Path to the file.
+
+    Returns
+    -------
+    astropy.table.Table
+        See Notes for the columns. The cells are listed in numerical order.
+
+    Notes
+    -----
+    The columns in the output table are,
+
+    ======= ===============
+    columns description
+    ======= ===============
+    RA1     RA of corner 1
+    dec1    dec of corner 1
+    RA2     RA of corner 2
+    dec2    dec of corner 2
+    RA3     RA of corner 3
+    dec3    dec of corner 3
+    RA4     RA of corner 4
+    dec4    dec of corner 4
+    ======= ===============
 
     """
     table = astropy.table.Table.read(filename, format='ascii')
@@ -459,36 +527,39 @@ def open_cornersfile(filename):
     return table
 
 
-def cornergrid(arr, shape=(NROW, NCOL)):
-    """Reshape a list of cell corners into a grid.
+def cornergrid(table):
+    """Reshape a table of cell corner coordinates into a grid.
 
     Parameters
     ----------
-    arr : array
-        1d array of corner values from `open_cornersfile`.
-    shape : tuple, optional
-        The shape of the output grid. Default is (`NROWS`, `NCOLS`).
+    table : array
+        Table from `open_cornersfile` containing the of RA,dec coordinates
+        of the corners of cells in a given brick. It is assumed that the
+        cells are listed in numerical order.
 
     Returns
     -------
     tuple
-        A tuple of two 2d arrays of the given shape: one for RA, the other
-        for dec.
+        A tuple containing an array of the RA coordinates and an array of
+        the dec coordinates of the cell corners. The arrays both have shape
+        ``((NROW+1),(NCOL+1))``, and the values are arranged to represent
+        the corners of the brick grid.
 
     """
-    ny, nx = shape
+    table = table[SORT]
+    shape = NROW, NCOL
 
-    agrid = np.zeros((ny+1, nx+1))
-    agrid[1:,:-1] = arr['RA1'].reshape(shape)[::-1]
-    agrid[1:,1:] = arr['RA2'].reshape(shape)[::-1]
-    agrid[:-1,1:] = arr['RA3'].reshape(shape)[::-1]
-    agrid[:-1,:-1] = arr['RA4'].reshape(shape)[::-1]
+    agrid = np.zeros((NROW+1, NCOL+1))
+    agrid[1:,:-1] = table['RA1'].reshape(shape)
+    agrid[1:,1:] = table['RA2'].reshape(shape)
+    agrid[:-1,1:] = table['RA3'].reshape(shape)
+    agrid[:-1,:-1] = table['RA4'].reshape(shape)
 
-    dgrid = np.zeros((ny+1, nx+1))
-    dgrid[1:,:-1] = arr['dec1'].reshape(shape)[::-1]
-    dgrid[1:,1:] = arr['dec2'].reshape(shape)[::-1]
-    dgrid[:-1,1:] = arr['dec3'].reshape(shape)[::-1]
-    dgrid[:-1,:-1] = arr['dec4'].reshape(shape)[::-1]
+    dgrid = np.zeros((NROW+1, NCOL+1))
+    dgrid[1:,:-1] = table['dec1'].reshape(shape)
+    dgrid[1:,1:] = table['dec2'].reshape(shape)
+    dgrid[:-1,1:] = table['dec3'].reshape(shape)
+    dgrid[:-1,:-1] = table['dec4'].reshape(shape)
 
     return agrid, dgrid
 
@@ -500,17 +571,27 @@ def cornergrid(arr, shape=(NROW, NCOL)):
 
 # Extinction parameter dictionary
 # -------------------------------
-# The bottleneck limiting import speed is in _load_extpar_dict, probably in
-# creating the `Table` instances.
+# The bottleneck limiting the import speed of this module is in
+# `_load_extpar_dict`, probably in creating the `Table` instances.
+
 def _load_extpar_dict():
     """Load av and dav extinction parameter values for all cells.
 
     Loop through all bricks, open their 'extpar' files, and save the av and
-    dav values for all cells as (av, dav) tuples in dictionary keyed by
-    (brick, cell). Cells without SFH data have av and dav both set to 99.
+    dav values for all cells as (av, dav) tuples in a dictionary keyed by
+    (brick, cell). Cells without SFH data have their cell number set to 0
+    and Av and dAv both set to 99.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dictionary
 
     """
-    pth = os.path.join(*_kind_dict['extpar'])
+    pth = os.path.join(*_KIND_DICT['extpar'])
     extpar_dict = {}
     for brick in BRICK_LIST:
         extparfile = pth.format(brick)
@@ -522,10 +603,17 @@ def _load_extpar_dict():
     return extpar_dict
 
 EXTPAR_DICT = _load_extpar_dict()
+"""Dictionary of the best-fit Av and dAv extinction parameters for every cell.
+
+The values are (av, dav) tuples and are keyed by (brick, cell). Both av and
+dav are equal to 99 if the cell does not actually have any SFH data.
+
+"""
 
 
 # List of cells without data
 # --------------------------
+
 def _find_missing_cells(extpar_dict, missing=None, badval=99):
     """Find specific cells for which no data are available.
 
@@ -545,13 +633,13 @@ def _find_missing_cells(extpar_dict, missing=None, badval=99):
         directly (i.e., the list is modified). If None (default), a new
         list is created.
     badval : int or float, optional
-        Value of av or dav which signifies that a given cell has no data.
-        Default is 99.
+        Value of av or dav which signifies that a cell has no data. Default
+        is 99.
 
     Returns
     -------
     list
-        List of (brick, cell) tuples that have no data.
+        List of (brick, cell) tuples for where there is no have no data.
 
     """
     if missing is None:
@@ -563,13 +651,15 @@ def _find_missing_cells(extpar_dict, missing=None, badval=99):
     return missing
 
 MISSING_CELLS = _find_missing_cells(EXTPAR_DICT)
+"""List of (brick, cell) tuples for where there is no data."""
 
 
 # Wrap `_path`
 # ------------
-# Want a wrapper around `_path` that specifically uses `EXTPAR_DICT` and
-# `MISSING_CELLS`. Also want to inherit the original docstring with some
+# Create a wrapper around `_path` that specifically uses `EXTPAR_DICT` and
+# `MISSING_CELLS`. Also inherit the original docstring with some
 # modifications.
+
 def __experimental__inheritdocstr(func):
     """Automatic parameter filtering.
 
