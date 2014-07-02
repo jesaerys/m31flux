@@ -101,7 +101,7 @@ The details as reported by Alexia:
 I received the following files from Alexia for each brick:
 
 - List of RA,dec coordinates of the corners of all cells in the brick (file
-  kind 'corners')
+  kind [1]_ 'corners')
 - List of best-fit Av,dAv extinction parameters of all cells in the brick
   (file kind 'extpar')
 - For each cell,
@@ -109,6 +109,9 @@ I received the following files from Alexia for each brick:
   - F475W,F814W ".gst" photometry file (kind 'phot'), and the SFH and CMD
     calcsfh output files (kinds 'sfh' and 'cmd') from the best-fit SFH
     solution
+
+.. [1] "kind" refers to the different types of files tracked by
+   `m31flux.config.path`.
 
 
 Process raw calcsfh data
