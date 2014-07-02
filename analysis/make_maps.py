@@ -2,7 +2,7 @@
 """
 import os
 
-from sfhmaps_phat import config, util
+from m31flux import config, util
 
 
 
@@ -54,10 +54,10 @@ def make_brick_images(kind, func):
     Parameters
     ----------
     kind : str
-        File kind (see `sfhmaps_phat.config`).
+        File kind (see `m31flux.config`).
     func : function
         Function that calculates the value of a cell (see
-        `sfhmaps_phat.make_brick_image`).
+        `m31flux.make_brick_image`).
 
     """
     for brick in config.BRICK_LIST:

@@ -1,35 +1,72 @@
 """
 
 =====================
-`sfhmaps_phat.config`
+`m31flux.config`
 =====================
 
-Constants and functions that locate data (both where it is and where it
-will be) and define how it is structured.
+Configuration for `m31flux`.
+
+This module contains constants and functions that locate data (both
+existing files and files created during analysis) and define how it is
+structured. The main features are,
+
+1. A `path` function, which keeps track of all project files. Paths to
+   particular files can be changed and new files can be added by modifying the
+   `_kind_dict`.
+
+2. Other project-specific things like galaxy and modeling parameters and
+   parsers for nonstandard files.
+
+3. A description of how the PHAT bricks are gridded and a model for
+   mapping the data to the grids. See `Brick grid model`_ below.
+
+
+Constants
+=========
+
+
+Functions
+=========
 
 
 Brick grid model
-----------------
-There are 23 bricks in the PHAT survey, numbered by integer starting with
-1. Each brick is divided into a grid with ny (`NROW`) rows and nx (`NCOL`)
-columns. Viewing a brick with north and west approximately up and to the
-right, respectively, the cells in the grid are numbered from 1 to ny*nx
-(`CELL_LIST`) according to the diagram::
+================
 
-   +---------------------------------+
-   |          1           2 ...    nx|      ^
-  ^|     1*nx+1      1*nx+2 ...  2*nx|      N
-   |     2*nx+1      2*nx+2 ...  3*nx|  < E   W >
-  y|        ...         ... ...   ...|      S
-   |(ny-1)*nx+1 (ny-1)*nx+2 ... ny*nx|      v
-   +---------------------------------+
-  0    x   >
+There are 23 bricks in the PHAT survey, labeled by integer starting with 1.
+Each brick is divided into an n*m grid, and the grid cells are labeled by
+integer from 1 to n*m. Viewing a brick with north and west approximately up
+and to the right, respectively, the cells are arranged according to the
+diagram::
 
-The grid is attached to a pixel coordinate system with the x,y origin at
-cell number ``(ny-1)*nx+1`` so that rows increase upward and columns
-increase to the right in the diagram. The center of the origin cell has
-pixel coordinates (x, y) = (1, 1) and the outer corner is at (0.5, 0.5).
+    n+0.5     +-----------+-----------+-----------+-----------+
+    n      n-1|         1 |         2 |    ...    |      m    |
+    n-0.5     +-----------+-----------+-----------+-----------+
+    n-1    n-2|     1*m+1 |     1*m+2 |    ...    |    2*m    |      ^
+    n-1.5     +-----------+-----------+-----------+-----------+      N
+    n-2    n-3|     2*m+1 |     2*m+2 |    ...    |    3*m    |  < E   W >
+    n-2.5     +-----------+-----------+-----------+-----------+      S
+    ...    ...|    ...    |    ...    |    ...    |    ...    |      v
+    1.5       +-----------+-----------+-----------+-----------+
+    1      i=0| (n-1)*m+1 | (n-1)*m+2 |    ...    |    n*m    |
+  y=0.5       +-----------+-----------+-----------+-----------+
+                  j=0           1          ...         m-1
+           x=0.5    1    1.5    2    2.5   ...   m-0.5   m   m+0.5
 
+The convention defined in this module is to set the grid origin at cell
+number ``(n-1)*m+1`` with the rows (i) increasing upward and the columns
+(j) increasing to the right in the diagram. In addition, a pixel coordinate
+system is assigned such that the center of the origin cell has pixel
+coordinates x,y = 1,1, with x and y increasing with j and i, respectively.
+
+*The cell numbers do not reflect their actual order in the grid array under
+this convention!* This is can be confusing because cell 1 is not the first
+cell. Rather, in a flattened n*m array (e.g., `numpy.ravel`), cell
+``(n-1)*m+1`` is first and cell m is last. The cell numbers are merely
+labels that happen to be integers.
+
+
+
+###
 SFHs were derived for the cells of all bricks listed in `BRICK_LIST`,
 except for any cells listed in `MISSING_CELLS` (see `_find_missing_cells`).
 The SFHs were calculated using MATCH, assuming the Av,dAv extinction model.
@@ -38,6 +75,7 @@ each cell (see also `_load_extpar_dict`).
 
 The `path` function locates all data in the project so that no path names
 have to be hardcoded in any modules or analyis scripts.
+###
 
 """
 import astrogrid
@@ -50,116 +88,165 @@ import os
 # PHAT bricks and the brick grid system
 # =====================================
 BRICK_LIST = np.array([2]+range(4,24))
-NROW, NCOL = 15, 30
-# This list of indices will 
-REORDER = np.arange(NROW*NCOL).reshape((NROW, NCOL))[::-1].ravel()
-# List of cells, ordered as a flattened array for astrogrid.Grid
-CELL_LIST = np.arange(NROW*NCOL)[REORDER] + 1
+"""List of all PHAT bricks available in the project in numerical order."""
+
+NROW = 15
+"""Number of rows in a brick grid."""
+
+NCOL = 30
+"""Number of columns in a brick grid."""
+
+CELL_LIST = np.arange(NROW*NCOL) + 1
+"""List of all cells in a brick grid in numerical order."""
+
+SORT = np.arange(NROW*NCOL).reshape((NROW, NCOL))[::-1].ravel()
+"""Indices that sort a list of cells in numerical order to grid order, and
+vice versa.
+
+"Grid order" refers to the order of the cells in a flattened array (e.g.,
+`numpy.ravel`). See the main documentation of `m31flux.config` for a
+description of brick grid coordinate conventions.
+
+"""
 
 
 
 # GALEX
 # =====
 GALEX_FIELD_LIST = [0, 7, 8, 9, 10]
-GALEX_FUV_FOREGROUND_CPS = 8.3573867e-4  # sfhmaps_phat.util._calc_galex_foreground
-GALEX_NUV_FOREGROUND_CPS = 5.393513e-3  # sfhmaps_phat.util._calc_galex_foreground
-GALEX_CHIP_X0 = 1920  # Approximate x pixel coordinate of chip center
-GALEX_CHIP_Y0 = 1920  # Approximate y pixel coordinate of chip center
-GALEX_CHIP_RAD = 1400  # Approximate chip radius in pixels, slightly undersized
+"""List of all GALEX DIS fields (or tiles) covering the PHAT survey area,
+in numerical order.
+
+"""
+
+#GALEX_FUV_FOREGROUND_CPS = 8.3573867e-4  # m31flux.util._calc_galex_foreground
+#GALEX_NUV_FOREGROUND_CPS = 5.393513e-3  # m31flux.util._calc_galex_foreground
+
+GALEX_CHIP_X0 = 1920
+"""Approximate x pixel coordinate of chip center."""
+
+GALEX_CHIP_Y0 = 1920
+"""Approximate y pixel coordinate of chip center."""
+
+GALEX_CHIP_RAD = 1400
+"""Approximate chip radius in pixels, slightly undersized."""
 
 
 
 # M31 and other parameters
 # ========================
-DMOD = 24.47  # Distance modulus; McConnachie, A. W., Irwin, M. J., Ferguson, A. M. N., et al. 2005, MNRAS, 356, 979
-DIST_PC = 10**(DMOD/5. + 1)  # Distance in pc
-DIST_CM = DIST_PC * 3.08567758e18  # Distance in cm
+DMOD = 24.47
+"""Distance modulus.
+
+McConnachie, A. W., Irwin, M. J., Ferguson, A. M. N., et al. 2005, MNRAS,
+356, 979.
+
+"""
+
+DIST_PC = 10**(DMOD/5. + 1)
+"""Distance in pc."""
+
+DIST_CM = DIST_PC * 3.08567758e18
+"""Distance in cm."""
+
 IMF = 'Kroupa'
-IMF_TYPE = 2  # FSPS IMF code
+"""Initial mass function."""
 
 
 
 # Paths
 # =====
-PROJECT_DIR = '/Users/Jake/Research/PHAT/sfhmaps-phat'
-SFH_DIR = os.path.join(PROJECT_DIR, 'sfh')
-ANALYSIS_DIR = os.path.join(PROJECT_DIR, 'analysis')
-GALEX_DIR = '/Users/Jake/Research/Storage/M31/GALEX/DIS'
+_PROJECT_DIR = '/Users/Jake/Research/PHAT/sfhmaps-phat'
+_SFH_DIR = os.path.join(_PROJECT_DIR, 'sfh')
+_ANALYSIS_DIR = os.path.join(_PROJECT_DIR, 'analysis')
+_GALEX_DIR = '/Users/Jake/Research/Storage/M31/GALEX/DIS'
 
 
-"""Each file kind is specified by a tuple of path elements which are later
-combined using `os.path.join`. All paths are formatted using a tuple of
-values, (field, subfield, av, dav). Values are selected and placed in a
-path string according to their indices (a value is omitted simply by not
-using its index in any format strings in a path).
-
-"""
 _kind_dict = {
-    'extpar':  (SFH_DIR, 'B{0:02d}', 'b{0:02d}_region_AvdAv.dat'),
-    'corners': (SFH_DIR, 'B{0:02d}', 'M31-B{0:02d}_15x30_subregion-exact-vertices.dat'),
-    'phot':    (SFH_DIR, 'B{0:02d}', 'phot', 'M31-B{0:02d}_15x30-{1:03d}.gst.match'),
-    'sfh':     (SFH_DIR, 'B{0:02d}', 'sfh',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh'),
-    'cmd':     (SFH_DIR, 'B{0:02d}', 'cmd',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh.cmd'),
-    'bestzcb': (ANALYSIS_DIR, 'b{0:02d}', 'bestzcb', 'b{0:02d}-{1:03d}_best.zcb'),
+    'extpar':  (_SFH_DIR, 'B{0:02d}', 'b{0:02d}_region_AvdAv.dat'),
+    'corners': (_SFH_DIR, 'B{0:02d}', 'M31-B{0:02d}_15x30_subregion-exact-vertices.dat'),
+    'phot':    (_SFH_DIR, 'B{0:02d}', 'phot', 'M31-B{0:02d}_15x30-{1:03d}.gst.match'),
+    'sfh':     (_SFH_DIR, 'B{0:02d}', 'sfh',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh'),
+    'cmd':     (_SFH_DIR, 'B{0:02d}', 'cmd',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh.cmd'),
+    'bestzcb': (_ANALYSIS_DIR, 'b{0:02d}', 'bestzcb', 'b{0:02d}-{1:03d}_best.zcb'),
 
-    'mod_fuv_int': (ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_int.fits'),
-    'mod_fuv_int.add': (ANALYSIS_DIR, 'mod_fuv_int.fits'),
-    'mod_fuv_int.density': (ANALYSIS_DIR, '_mod_fuv_int', 'input', 'b{0:02d}_mod_fuv_int_density.fits'),
-    'mod_fuv_int.reproject': (ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density.fits'),
-    'mod_fuv_int.reproject.add': (ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density.fits'),
-    'mod_fuv_int.area': (ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density_area.fits'),
-    'mod_fuv_int.area.add': (ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density_area.fits'),
+    'mod_fuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_int.fits'),
+    'mod_fuv_int.add': (_ANALYSIS_DIR, 'mod_fuv_int.fits'),
+    'mod_fuv_int.density': (_ANALYSIS_DIR, '_mod_fuv_int', 'input', 'b{0:02d}_mod_fuv_int_density.fits'),
+    'mod_fuv_int.reproject': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density.fits'),
+    'mod_fuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density.fits'),
+    'mod_fuv_int.area': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density_area.fits'),
+    'mod_fuv_int.area.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density_area.fits'),
     'mod_fuv_int.hdr': 'mod_fuv_red.hdr',
 
-    'mod_fuv_red': (ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_red.fits'),
-    'mod_fuv_red.add': (ANALYSIS_DIR, 'mod_fuv_red.fits'),
-    'mod_fuv_red.density': (ANALYSIS_DIR, '_mod_fuv_red', 'input', 'b{0:02d}_mod_fuv_red_density.fits'),
-    'mod_fuv_red.reproject': (ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density.fits'),
-    'mod_fuv_red.reproject.add': (ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density.fits'),
-    'mod_fuv_red.area': (ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density_area.fits'),
-    'mod_fuv_red.area.add': (ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density_area.fits'),
-    'mod_fuv_red.hdr': (ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
+    'mod_fuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_red.fits'),
+    'mod_fuv_red.add': (_ANALYSIS_DIR, 'mod_fuv_red.fits'),
+    'mod_fuv_red.density': (_ANALYSIS_DIR, '_mod_fuv_red', 'input', 'b{0:02d}_mod_fuv_red_density.fits'),
+    'mod_fuv_red.reproject': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density.fits'),
+    'mod_fuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density.fits'),
+    'mod_fuv_red.area': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density_area.fits'),
+    'mod_fuv_red.area.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density_area.fits'),
+    'mod_fuv_red.hdr': (_ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
 
-    'galex_fuv': (GALEX_DIR, 'PS_M31_MOS{0:02d}-fd-int.fits'),
-    'galex_fuv.add': (ANALYSIS_DIR, 'galex_fuv.fits'),
-    'galex_fuv.density': (ANALYSIS_DIR, '_galex_fuv', 'input', 'MOS{0:02d}_galex_fuv_density.fits'),
-    'galex_fuv.reproject': (ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density.fits'),
-    'galex_fuv.reproject.add': (ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density.fits'),
-    'galex_fuv.area': (ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density_area.fits'),
-    'galex_fuv.area.add': (ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density_area.fits'),
+    'galex_fuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-fd-int.fits'),
+    'galex_fuv.add': (_ANALYSIS_DIR, 'galex_fuv.fits'),
+    'galex_fuv.density': (_ANALYSIS_DIR, '_galex_fuv', 'input', 'MOS{0:02d}_galex_fuv_density.fits'),
+    'galex_fuv.reproject': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density.fits'),
+    'galex_fuv.reproject.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density.fits'),
+    'galex_fuv.area': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density_area.fits'),
+    'galex_fuv.area.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density_area.fits'),
     'galex_fuv.hdr': 'mod_fuv_red.hdr',
 
-    'mod_nuv_int': (ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_int.fits'),
-    'mod_nuv_int.add': (ANALYSIS_DIR, 'mod_nuv_int.fits'),
-    'mod_nuv_int.density': (ANALYSIS_DIR, '_mod_nuv_int', 'input', 'b{0:02d}_mod_nuv_int_density.fits'),
-    'mod_nuv_int.reproject': (ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density.fits'),
-    'mod_nuv_int.reproject.add': (ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density.fits'),
-    'mod_nuv_int.area': (ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density_area.fits'),
-    'mod_nuv_int.area.add': (ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density_area.fits'),
+    'mod_nuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_int.fits'),
+    'mod_nuv_int.add': (_ANALYSIS_DIR, 'mod_nuv_int.fits'),
+    'mod_nuv_int.density': (_ANALYSIS_DIR, '_mod_nuv_int', 'input', 'b{0:02d}_mod_nuv_int_density.fits'),
+    'mod_nuv_int.reproject': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density.fits'),
+    'mod_nuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density.fits'),
+    'mod_nuv_int.area': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density_area.fits'),
+    'mod_nuv_int.area.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density_area.fits'),
     'mod_nuv_int.hdr': 'mod_fuv_red.hdr',
 
-    'mod_nuv_red': (ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_red.fits'),
-    'mod_nuv_red.add': (ANALYSIS_DIR, 'mod_nuv_red.fits'),
-    'mod_nuv_red.density': (ANALYSIS_DIR, '_mod_nuv_red', 'input', 'b{0:02d}_mod_nuv_red_density.fits'),
-    'mod_nuv_red.reproject': (ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density.fits'),
-    'mod_nuv_red.reproject.add': (ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density.fits'),
-    'mod_nuv_red.area': (ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density_area.fits'),
-    'mod_nuv_red.area.add': (ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density_area.fits'),
+    'mod_nuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_red.fits'),
+    'mod_nuv_red.add': (_ANALYSIS_DIR, 'mod_nuv_red.fits'),
+    'mod_nuv_red.density': (_ANALYSIS_DIR, '_mod_nuv_red', 'input', 'b{0:02d}_mod_nuv_red_density.fits'),
+    'mod_nuv_red.reproject': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density.fits'),
+    'mod_nuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density.fits'),
+    'mod_nuv_red.area': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density_area.fits'),
+    'mod_nuv_red.area.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density_area.fits'),
     'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
 
-    'galex_nuv': (GALEX_DIR, 'PS_M31_MOS{0:02d}-nd-int.fits'),
-    'galex_nuv.add': (ANALYSIS_DIR, 'galex_nuv.fits'),
-    'galex_nuv.density': (ANALYSIS_DIR, '_galex_nuv', 'input', 'MOS{0:02d}_galex_nuv_density.fits'),
-    'galex_nuv.reproject': (ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density.fits'),
-    'galex_nuv.reproject.add': (ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density.fits'),
-    'galex_nuv.area': (ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density_area.fits'),
-    'galex_nuv.area.add': (ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density_area.fits'),
+    'galex_nuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-nd-int.fits'),
+    'galex_nuv.add': (_ANALYSIS_DIR, 'galex_nuv.fits'),
+    'galex_nuv.density': (_ANALYSIS_DIR, '_galex_nuv', 'input', 'MOS{0:02d}_galex_nuv_density.fits'),
+    'galex_nuv.reproject': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density.fits'),
+    'galex_nuv.reproject.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density.fits'),
+    'galex_nuv.area': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density_area.fits'),
+    'galex_nuv.area.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density_area.fits'),
     'galex_nuv.hdr': 'mod_fuv_red.hdr'
     }
+"""Path elements used to build paths to the different file kinds.
+
+This dictionary is used by `_path` and defines the locations of all file
+kinds in the project. Each file kind is specified by a tuple of path
+elements (strings) which are later combined into a single string using
+`os.path.join`.
+
+The elements may contain format strings as placeholders for inserting one
+or more of the values in a standard tuple, ``(field, subfield, av, dav)``
+when `_path` is actually called. The first two values are documented in
+`_path`, and the last two refer to Av and dAv extinction parameters. The
+values are referenced in a format string according to their tuple index.
+For example, putting ``'{1:02d}'`` in a path element will insert the value
+of ``subfield`` formatted as a padded two-column integer.
+
+To link one file kind to another, set the kind's value to the name of the
+other kind. This is useful if two kinds actually share the same file.
+
+"""
 
 
 def _path(kind, extpar_dict, **kwargs):
-    """File paths for the `sfhmaps_phat` project.
+    """File paths for the `m31flux` project.
 
     Parameters
     ----------
@@ -409,8 +496,12 @@ def cornergrid(arr, shape=(NROW, NCOL)):
 
 # Run at import
 # =============
-# .. note:: The bottleneck limiting import speed is in _load_extpar_dict,
-#    probably in creating the `Table` instances.
+
+
+# Extinction parameter dictionary
+# -------------------------------
+# The bottleneck limiting import speed is in _load_extpar_dict, probably in
+# creating the `Table` instances.
 def _load_extpar_dict():
     """Load av and dav extinction parameter values for all cells.
 
@@ -430,7 +521,11 @@ def _load_extpar_dict():
                             for cell, row in zip(CELL_LIST, table)})
     return extpar_dict
 
+EXTPAR_DICT = _load_extpar_dict()
 
+
+# List of cells without data
+# --------------------------
 def _find_missing_cells(extpar_dict, missing=None, badval=99):
     """Find specific cells for which no data are available.
 
@@ -467,11 +562,14 @@ def _find_missing_cells(extpar_dict, missing=None, badval=99):
 
     return missing
 
-
-EXTPAR_DICT = _load_extpar_dict()
 MISSING_CELLS = _find_missing_cells(EXTPAR_DICT)
 
 
+# Wrap `_path`
+# ------------
+# Want a wrapper around `_path` that specifically uses `EXTPAR_DICT` and
+# `MISSING_CELLS`. Also want to inherit the original docstring with some
+# modifications.
 def __experimental__inheritdocstr(func):
     """Automatic parameter filtering.
 
@@ -499,7 +597,6 @@ def __experimental__inheritdocstr(func):
     func.__doc__ = docstr2
     return func
 
-
 def _inheritdocstr(func):
     """Manually select pieces of docstring to inherit.
 
@@ -512,7 +609,6 @@ def _inheritdocstr(func):
     docstr2 = '\n'.join(lines2)
     func.__doc__ = docstr2
     return func
-
 
 @_inheritdocstr
 def path(kind, **kwargs):

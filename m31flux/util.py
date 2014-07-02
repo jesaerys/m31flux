@@ -207,7 +207,7 @@ def make_mosaic(kind, make_header=False, cdelt=None, background_match=False,
     Parameters
     ----------
     kind : str
-        File kind (see `sfhmaps_phat.config`).
+        File kind (see `m31flux.config`).
     make_header : bool, optional
         If True, a template header for the mosaic will be created based on
         the input images. If False (default), then the file pointed to by
