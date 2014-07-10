@@ -42,11 +42,3 @@ def make_bestzcb(norun=False):
         dirname = os.path.dirname(zcbfile)
         util.safe_mkdir(dirname)
         match.zcombine(sfhfile, zcbfile, bestonly=True, norun=norun)
-
-
-def main():
-    make_bestzcb()
-
-
-if __name__ == "__main__":
-    main()
