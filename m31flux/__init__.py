@@ -27,11 +27,13 @@ Modules
 
 ============= ============================================
 `config`      Configuration for `m31flux`.
-`util`        General utilities.
+`fluxmap`     Create modeled flux maps from SFH data.
 `process_sfh` Process calcsfh output files using zcombine.
-`make_maps`   Create modeled flux maps from SFH data.
+`util`        General utilities.
 ============= ============================================
 
 """
 from . import config
+from . import fluxmap
+from . import process_sfh
 from . import util

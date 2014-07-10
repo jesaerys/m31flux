@@ -1,8 +1,8 @@
 """
 
-===================
-`m31flux.make_maps`
-===================
+=================
+`m31flux.fluxmap`
+=================
 
 Create modeled flux maps from SFH data.
 
@@ -18,12 +18,16 @@ Constants
 Functions
 ---------
 
-======================= ===================================================
-`calc_flux_mod_fuv_red` Calculate reddened FUV flux for the given brick and
-                        cell.
-`calc_flux_mod_fuv_int` Calculate intrinsic FUV flux for the given brick
-                        and cell.
-======================= ===================================================
+=================== ======================================================
+`make_brick_images` Make one type of image for all bricks.
+`make_mod_fuv_red`  Calculate reddened FUV flux for the given brick and
+                    cell.
+`make_mod_fuv_int`  Calculate intrinsic FUV flux for the given brick and
+                    cell.
+`galex_pre_fuv`     Mask border pixels and convert into flux units.
+`galex_post_fuv`    Measure the background flux level and subtract it from
+                    the image.
+=================== ======================================================
 
 """
 import astrogrid
@@ -37,48 +41,6 @@ FSPS_KWARGS = {'imf_type': astrogrid.flux.IMF_TYPE[config.IMF]}
 """The IMF to use for all FSPS stellar population models."""
 
 
-
-# FUV
-# ---
-
-def calc_flux_mod_fuv_red(brick, cell):
-    """Calculate reddened FUV flux for the given brick and cell."""
-    av, dav = config.EXTPAR_DICT[(brick, cell)]
-    return util.calc_flux(brick, cell, 'galex_fuv', dmod=config.DMOD,
-                          av=av, dav=dav, fsps_kwargs=FSPS_KWARGS)
-
-
-def calc_flux_mod_fuv_int(brick, cell):
-    """Calculate intrinsic FUV flux for the given brick and cell."""
-    return util.calc_flux(brick, cell, 'galex_fuv', agelimdmod=config.DMOD,
-                          fsps_kwargs=FSPS_KWARGS)
-
-
-def prep_galex_fuv(data, hdr):
-    return util.prep_galex(data, hdr, 'galex_fuv')
-
-
-
-# NUV
-# ---
-def calc_flux_mod_nuv_red(brick, cell):
-    av, dav = config.EXTPAR_DICT[(brick, cell)]
-    return util.calc_flux(brick, cell, 'galex_nuv', dmod=config.DMOD,
-                          av=av, dav=dav, fsps_kwargs=FSPS_KWARGS)
-
-
-def calc_flux_mod_nuv_int(brick, cell):
-    return util.calc_flux(brick, cell, 'galex_nuv', dmod=config.DMOD,
-                          fsps_kwargs=FSPS_KWARGS)
-
-
-def prep_galex_nuv(data, hdr):
-    return util.prep_galex(data, hdr, 'galex_nuv')
-
-
-
-# Main
-# ----
 def make_brick_images(kind, func):
     """Make one type of image for all bricks.
 
@@ -92,6 +54,7 @@ def make_brick_images(kind, func):
 
     """
     for brick in config.BRICK_LIST:
+        print 'Brick {:02d}'.format(brick)
         hdu = util.make_brick_image(brick, func)
         filename = config.path(kind, field=brick)
         dirname = os.path.dirname(filename)
@@ -99,27 +62,75 @@ def make_brick_images(kind, func):
         if os.path.exists(filename):
             os.remove(filename)
         hdu.writeto(filename)
-    return None
+    print
+    return
 
 
-def main():
-    make_brick_images('mod_fuv_red', calc_flux_mod_fuv_red)
-    #util.make_mosaic('mod_fuv_red', make_header=True)
-    #make_brick_images('mod_fuv_int', calc_flux_mod_fuv_int)
-    #util.make_mosaic('mod_fuv_int')
-    #util.make_mosaic('galex_fuv', procinput=prep_galex_fuv)
 
-    #make_brick_images('mod_nuv_red', calc_flux_mod_nuv_red)
-    #util.make_mosaic('mod_nuv_red')
-    #make_brick_images('mod_nuv_int', calc_flux_mod_nuv_int)
-    #util.make_mosaic('mod_nuv_int')
-    #util.make_mosaic('galex_nuv', procinput=prep_galex_nuv)
+# FUV
+# ---
 
-    return None
+def make_mod_fuv_red():
+    """Reddened FUV flux."""
+    def func(brick, cell):
+        av, dav = config.EXTPAR_DICT[(brick, cell)]
+        return util.calc_flux(
+            brick, cell, 'galex_fuv', dmod=config.DMOD, av=av, dav=dav,
+            dust_curve=config.DUST_CURVE, fsps_kwargs=FSPS_KWARGS)
+    make_brick_images('mod_fuv_red', func)
 
 
-if __name__ == '__main__':
-    main()
+def make_mod_fuv_int():
+    """Intrinsic FUV flux."""
+    def func(brick, pixel):
+        return util.calc_flux(
+            brick, cell, 'galex_fuv', agelimdmod=config.DMOD,
+            dust_curve=config.DUST_CURVE, fsps_kwargs=FSPS_KWARGS)
+    make_brick_images('mod_fuv_int', func)
+
+
+def make_galex_fuv():
+    pass
+
+
+def galex_pre_fuv(data, hdr):
+    """Mask border pixels and convert into flux units."""
+    return util.galex_pre(data, hdr, 'galex_fuv')
+
+
+def galex_post_fuv(data, hdr):
+    """Measure the background flux level and subtract it from the image."""
+    return util.galex_post(data, hdr, 'galex_fuv')
+
+
+
+# NUV
+# ---
+
+def calc_flux_mod_nuv_red(brick, cell):
+    av, dav = config.EXTPAR_DICT[(brick, cell)]
+    return util.calc_flux(brick, cell, 'galex_nuv', dmod=config.DMOD,
+                          av=av, dav=dav, fsps_kwargs=FSPS_KWARGS)
+
+
+def calc_flux_mod_nuv_int(brick, cell):
+    return util.calc_flux(brick, cell, 'galex_nuv', dmod=config.DMOD,
+                          fsps_kwargs=FSPS_KWARGS)
+
+
+def galex_pre_nuv(data, hdr):
+    """Mask border pixels and convert into flux units."""
+    return util.galex_pre(data, hdr, 'galex_nuv')
+
+
+def galex_post_nuv(data, hdr):
+    """Measure the background flux level and subtract it from the image."""
+    return util.galex_post(data, hdr, 'galex_nuv')
+
+
+
+
+
 
 
 
@@ -295,7 +306,7 @@ def make_galex_uv_brickmaps(band, clean=False):
     return None
 
 
-def main():
+def _main():
     #make_mean_sfr_100myr_brickmaps()
     #make_mean_sfr_100myr_mosaic()
 
