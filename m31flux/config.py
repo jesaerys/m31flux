@@ -25,39 +25,41 @@ structured. The main features are,
 Constants
 ---------
 
-================ =========================================================
-BRICK_LIST       List of all PHAT bricks available in the project in
-                 numerical order.
-NROW             Number of rows in a brick grid.
-NCOL             Number of columns in a brick grid.
-CELL_LIST        List of all cells in a brick grid in numerical order.
-SORT             Indices that sort a list of cells in numerical order to
-                 grid order, and vice versa.
-GALEX_FIELD_LIST List of all GALEX DIS fields (or tiles) covering the PHAT
-                 survey area, in numerical order.
-GALEX_CHIP_X0    Approximate x pixel coordinate of chip center.
-GALEX_CHIP_Y0    Approximate y pixel coordinate of chip center.
-GALEX_CHIP_RAD   Approximate chip radius in pixels, slightly undersized.
-DMOD             Distance modulus.
-DIST_PC          Distance in pc.
-DIST_CM          Distance in cm.
-IMF              Initial mass function.
-_KIND_DICT       Path elements used to build paths to the different file
-                 kinds.
-EXTPAR_DICT      Dictionary of the best-fit Av and dAv extinction
-                 parameters for every cell.
-MISSING_CELLS    List of (brick, cell) tuples for where there is no data.
-================ =========================================================
+================== ========================================================
+`BRICK_LIST`       List of all PHAT bricks available in the project in
+                   numerical order.
+`NROW`             Number of rows in a brick grid.
+`NCOL`             Number of columns in a brick grid.
+`CELL_LIST`        List of all cells in a brick grid in numerical order.
+`SORT`             Indices that sort a list of cells in numerical order to
+                   grid order, and vice versa.
+`GALEX_FIELD_LIST` List of all GALEX DIS fields (or tiles) covering the
+                   PHAT survey area, in numerical order.
+`GALEX_CHIP_X0`    Approximate x pixel coordinate of chip center.
+`GALEX_CHIP_Y0`    Approximate y pixel coordinate of chip center.
+`GALEX_CHIP_RAD`   Approximate chip radius in pixels, slightly undersized.
+`DMOD`             Distance modulus.
+`DIST_PC`          Distance in pc.
+`DIST_CM`          Distance in cm.
+`INC`              Disk inclination angle in degrees.
+`IMF`              Initial mass function.
+`DUST_CURVE`       Dust curve.
+`_KIND_DICT`       Path elements used to build paths to the different file
+                   kinds.
+`EXTPAR_DICT`      Dictionary of the best-fit Av and dAv extinction
+                   parameters for every cell.
+`MISSING_CELLS`    List of (brick, cell) tuples for where there is no data.
+================== ========================================================
 
 
 Functions
 ---------
 
-================ =======================================================
-open_extparfile  Create a table from a file of kind 'extpar'.
-open_cornersfile Create a table from a file of kind 'corners'.
-cornergrid       Reshape a table of cell corner coordinates into a grid.
-================ =======================================================
+================== =======================================================
+`open_extparfile`  Create a table from a file of kind 'extpar'.
+`open_cornersfile` Create a table from a file of kind 'corners'.
+`cornergrid`       Reshape a table of cell corner coordinates into a grid.
+================== =======================================================
 
 
 Brick grid model
@@ -170,8 +172,22 @@ DIST_PC = 10**(DMOD/5. + 1)
 DIST_CM = DIST_PC * 3.08567758e18
 """Distance in cm."""
 
+INC = 78.0
+"""Disk inclination angle in degrees.
+
+Tully, R. B. 1994, yCat, 7145, 0.
+
+"""
+
 IMF = 'Kroupa'
 """Initial mass function."""
+
+DUST_CURVE = 'cardelli'
+"""Dust curve.
+
+Cardelli, J.~A., Clayton, G.~C., \& Mathis, J.~S.\ 1989, \apj, 345, 245.
+
+"""
 
 
 
@@ -193,58 +209,58 @@ _KIND_DICT = {
     'bestzcb': (_ANALYSIS_DIR, 'b{0:02d}', 'bestzcb', 'b{0:02d}-{1:03d}_best.zcb'),
 
     'mod_fuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_int.fits'),
-    'mod_fuv_int.add': (_ANALYSIS_DIR, 'mod_fuv_int.fits'),
-    'mod_fuv_int.density': (_ANALYSIS_DIR, '_mod_fuv_int', 'input', 'b{0:02d}_mod_fuv_int_density.fits'),
-    'mod_fuv_int.reproject': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density.fits'),
-    'mod_fuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density.fits'),
-    'mod_fuv_int.area': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density_area.fits'),
-    'mod_fuv_int.area.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density_area.fits'),
-    'mod_fuv_int.hdr': 'mod_fuv_red.hdr',
+    #'mod_fuv_int.add': (_ANALYSIS_DIR, 'mod_fuv_int.fits'),
+    #'mod_fuv_int.density': (_ANALYSIS_DIR, '_mod_fuv_int', 'input', 'b{0:02d}_mod_fuv_int_density.fits'),
+    #'mod_fuv_int.reproject': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density.fits'),
+    #'mod_fuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density.fits'),
+    #'mod_fuv_int.area': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density_area.fits'),
+    #'mod_fuv_int.area.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density_area.fits'),
+    #'mod_fuv_int.hdr': 'mod_fuv_red.hdr',
 
     'mod_fuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_red.fits'),
-    'mod_fuv_red.add': (_ANALYSIS_DIR, 'mod_fuv_red.fits'),
-    'mod_fuv_red.density': (_ANALYSIS_DIR, '_mod_fuv_red', 'input', 'b{0:02d}_mod_fuv_red_density.fits'),
-    'mod_fuv_red.reproject': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density.fits'),
-    'mod_fuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density.fits'),
-    'mod_fuv_red.area': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density_area.fits'),
-    'mod_fuv_red.area.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density_area.fits'),
-    'mod_fuv_red.hdr': (_ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
+    #'mod_fuv_red.add': (_ANALYSIS_DIR, 'mod_fuv_red.fits'),
+    #'mod_fuv_red.density': (_ANALYSIS_DIR, '_mod_fuv_red', 'input', 'b{0:02d}_mod_fuv_red_density.fits'),
+    #'mod_fuv_red.reproject': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density.fits'),
+    #'mod_fuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density.fits'),
+    #'mod_fuv_red.area': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density_area.fits'),
+    #'mod_fuv_red.area.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density_area.fits'),
+    #'mod_fuv_red.hdr': (_ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
 
     'galex_fuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-fd-int.fits'),
-    'galex_fuv.add': (_ANALYSIS_DIR, 'galex_fuv.fits'),
-    'galex_fuv.density': (_ANALYSIS_DIR, '_galex_fuv', 'input', 'MOS{0:02d}_galex_fuv_density.fits'),
-    'galex_fuv.reproject': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density.fits'),
-    'galex_fuv.reproject.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density.fits'),
-    'galex_fuv.area': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density_area.fits'),
-    'galex_fuv.area.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density_area.fits'),
-    'galex_fuv.hdr': 'mod_fuv_red.hdr',
+    #'galex_fuv.add': (_ANALYSIS_DIR, 'galex_fuv.fits'),
+    #'galex_fuv.density': (_ANALYSIS_DIR, '_galex_fuv', 'input', 'MOS{0:02d}_galex_fuv_density.fits'),
+    #'galex_fuv.reproject': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density.fits'),
+    #'galex_fuv.reproject.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density.fits'),
+    #'galex_fuv.area': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density_area.fits'),
+    #'galex_fuv.area.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density_area.fits'),
+    #'galex_fuv.hdr': 'mod_fuv_red.hdr',
 
     'mod_nuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_int.fits'),
-    'mod_nuv_int.add': (_ANALYSIS_DIR, 'mod_nuv_int.fits'),
-    'mod_nuv_int.density': (_ANALYSIS_DIR, '_mod_nuv_int', 'input', 'b{0:02d}_mod_nuv_int_density.fits'),
-    'mod_nuv_int.reproject': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density.fits'),
-    'mod_nuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density.fits'),
-    'mod_nuv_int.area': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density_area.fits'),
-    'mod_nuv_int.area.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density_area.fits'),
-    'mod_nuv_int.hdr': 'mod_fuv_red.hdr',
+    #'mod_nuv_int.add': (_ANALYSIS_DIR, 'mod_nuv_int.fits'),
+    #'mod_nuv_int.density': (_ANALYSIS_DIR, '_mod_nuv_int', 'input', 'b{0:02d}_mod_nuv_int_density.fits'),
+    #'mod_nuv_int.reproject': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density.fits'),
+    #'mod_nuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density.fits'),
+    #'mod_nuv_int.area': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density_area.fits'),
+    #'mod_nuv_int.area.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density_area.fits'),
+    #'mod_nuv_int.hdr': 'mod_fuv_red.hdr',
 
     'mod_nuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_red.fits'),
-    'mod_nuv_red.add': (_ANALYSIS_DIR, 'mod_nuv_red.fits'),
-    'mod_nuv_red.density': (_ANALYSIS_DIR, '_mod_nuv_red', 'input', 'b{0:02d}_mod_nuv_red_density.fits'),
-    'mod_nuv_red.reproject': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density.fits'),
-    'mod_nuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density.fits'),
-    'mod_nuv_red.area': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density_area.fits'),
-    'mod_nuv_red.area.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density_area.fits'),
-    'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
+    #'mod_nuv_red.add': (_ANALYSIS_DIR, 'mod_nuv_red.fits'),
+    #'mod_nuv_red.density': (_ANALYSIS_DIR, '_mod_nuv_red', 'input', 'b{0:02d}_mod_nuv_red_density.fits'),
+    #'mod_nuv_red.reproject': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density.fits'),
+    #'mod_nuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density.fits'),
+    #'mod_nuv_red.area': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density_area.fits'),
+    #'mod_nuv_red.area.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density_area.fits'),
+    #'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
 
     'galex_nuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-nd-int.fits'),
-    'galex_nuv.add': (_ANALYSIS_DIR, 'galex_nuv.fits'),
-    'galex_nuv.density': (_ANALYSIS_DIR, '_galex_nuv', 'input', 'MOS{0:02d}_galex_nuv_density.fits'),
-    'galex_nuv.reproject': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density.fits'),
-    'galex_nuv.reproject.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density.fits'),
-    'galex_nuv.area': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density_area.fits'),
-    'galex_nuv.area.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density_area.fits'),
-    'galex_nuv.hdr': 'mod_fuv_red.hdr'
+    #'galex_nuv.add': (_ANALYSIS_DIR, 'galex_nuv.fits'),
+    #'galex_nuv.density': (_ANALYSIS_DIR, '_galex_nuv', 'input', 'MOS{0:02d}_galex_nuv_density.fits'),
+    #'galex_nuv.reproject': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density.fits'),
+    #'galex_nuv.reproject.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density.fits'),
+    #'galex_nuv.area': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density_area.fits'),
+    #'galex_nuv.area.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density_area.fits'),
+    #'galex_nuv.hdr': 'mod_fuv_red.hdr'
     }
 """Path elements used to build paths to the different file kinds.
 
@@ -306,7 +322,10 @@ def _path(kind, extpar_dict, **kwargs):
     Returns
     -------
     string or list of strings
-        List of file paths.
+        Path, or list of paths, to the given kind. A list is returned
+        whenever the given keywords are insufficient to make an unambiguous
+        path name (e.g., a kind that is fully specified by both `field` and
+        `subfield`, but only `field` is given).
 
     Notes
     -----
@@ -374,12 +393,14 @@ def _path(kind, extpar_dict, **kwargs):
 
     """
     # Follow any links in _KIND_DICT
-    while not astrogrid.util.islistlike(_KIND_DICT[kind]):
+    while isinstance(_KIND_DICT[kind], basestring):
         kind = _KIND_DICT[kind]
 
     # List of fields
+    single_field = False
     if kind.endswith('.add') or kind.endswith('.hdr'):
         field = [None]
+        single_field = True
     else:
         if 'galex' in kind:
             allfields = GALEX_FIELD_LIST
@@ -388,24 +409,32 @@ def _path(kind, extpar_dict, **kwargs):
         field =  kwargs.get('field')
         if field is None:
             field = allfields
-        elif not astrogrid.util.islistlike(field):
-            field = [field]  # convert to list
-        # Only fields in allfields are available
-        field = [fld for fld in field if fld in allfields]
+        else:
+            # Only fields in allfields are available
+            try:  # field is a list of field numbers
+                field = [fld for fld in field if fld in allfields]
+            except TypeError:  # field is a single field number
+                field = [field] if field in allfields else []
+                single_field = True
 
     # List of subfields
+    single_subfield = False
     subfield_kinds = ['phot', 'sfh', 'cmd', 'bestzcb']  # kinds that have subfields
     if kind in subfield_kinds:
         allsubfields = CELL_LIST
         subfield = kwargs.get('subfield')
         if subfield is None:
             subfield = allsubfields
-        elif not astrogrid.util.islistlike(subfield):
-            subfield = [subfield]  # convert to list
-        # Only subfields in allsubfields are available
-        subfield = [sfld for sfld in subfield if sfld in allsubfields]
+        else:
+            # Only subfields in allsubfields are available
+            try:  # subfield is a list of subfields
+                subfield = [sfld for sfld in subfield if sfld in allsubfields]
+            except TypeError:  # subfield is a single subfield number
+                subfield = [subfield] if subfield in allsubfields else []
+                single_subfield = True
     else:
         subfield = [None]
+        single_subfield = True
 
     # List of paths
     missing = kwargs.get('missing', [])
@@ -424,11 +453,9 @@ def _path(kind, extpar_dict, **kwargs):
 
     # Return None if no paths; don't return a list of length 1 unless a
     # list was specifically given for field or subfield
-    cond = len(path_list) == 1 and not astrogrid.util.islistlike(kwargs.get('field'))
     if not path_list:
         path_list = None
-    elif (cond and not astrogrid.util.islistlike(kwargs.get('subfield'))
-            if kind in subfield_kinds else cond):
+    elif len(path_list) == 1 and single_field and single_subfield:
         path_list = path_list[0]
 
     return path_list
