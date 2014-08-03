@@ -6,28 +6,46 @@
 `main`
 ======
 
-Complete data analysis record and research notes.
+Synthetic broadband flux maps of M31 from resolved optical photometry.
 
-The code in this script is organized into well-documented functions, each
-of which more or less corresponds to a section in a paper.
+Jacob E. Simones, Julianne J. Dalcanton, Andrew E. Dolphin, Benjamin D.
+Johnson, Alexia R. Lewis, Evan D. Skillman, Daniel R. Weisz, Benjamin F.
+Williams
+
+Star formation histories derived from resolved optical photometry from PHAT
+were used to create maps of broadband flux in the ultraviolet and mid
+infrared. The maps cover roughly one third of the disk of M31 and have a
+resolution of ~430 pc. The maps were compared with observations from GALEX
+and Spitzer.
+
+This script serves both as a frontend to the `m31flux` package which
+contains all of the code used for this project, and as a complete research
+and analysis record. The code here is organized into well-documented
+functions, each of which more or less corresponds to a section in a paper.
 
 """
-import m31flux
-import sys
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import argparse
 
 
 def star_formation_histories():
     """
+    Star formation histories
+    ========================
+
     Background
-    ==========
-    Alexia has divided all of the PHAT bricks (except 1 and 3, which cover
-    the bulge) into 15x30 grids and measured the SFH in each grid cell
-    (a.k.a., "pixel" or "region"). The cells are 23.87(6)x26.8(3) arcsec in
-    size, or, assuming a distance modulus of 24.47 (McConnachie et al.
-    2005) and an inclination angle of 78 deg (Tully 1994), 436(1)x490(5) pc
-    (the uncertainties come from slight variations between cells). The SFHs
-    were measured from the PHAT F475W,F814W ".gst" photometry using MATCH
-    assuming the following:
+    ----------
+    Alexia has divided all of the PHAT bricks (except 1 and 3 near the
+    bulge) into 15x30 grids and measured the star formation history (SFH)
+    in each grid cell (a.k.a., "pixel" or "region"). See `Brick grid
+    model`_ below. The cells are 23.87(6)x26.8(3) arcsec in size, or
+    436(1)x490(5) pc (the uncertainties come from slight variations between
+    cells) assuming a distance modulus of 24.47 (McConnachie et al. 2005)
+    and an inclination angle of 78 deg (Tully 1994). The SFHs were measured
+    from the PHAT F475W,F814W ".gst" photometry using MATCH with the
+    following assumptions:
 
     - Kroupa IMF
     - Padova isochrones (the default models in MATCH 2.5)
@@ -37,8 +55,8 @@ def star_formation_histories():
     - 34 log-spaced age bins from log10(age) = 6.60 to 10.15.
     - A CMD exclusion area to mask out evolved stars from 1.25 to 5.0 in
       F457W-F814W and from 21.0 to 27.2 in F475W.
-    - The Av,dAv extinction model, where the parameters were optimized for
-      each cell.
+    - The Av,dAv extinction model, where the Av and dAv parameters were
+      optimized for each cell.
 
     The details as reported by Alexia:
 
@@ -53,35 +71,35 @@ def star_formation_histories():
       immediately surrounding the best fit if it wasn't already complete.
       These were all done without use of the -mcdata flag. ::
 
-        $ calcsfh master.sfhparam_0.5 M31-B05_15x30-126.gst.match \
-            M31-B05_15x30-126_gst.matchfake M31-B05_15x30-126_0.5-1.9.sfh \
+        $ calcsfh master.sfhparam_0.5 M31-B05_15x30-126.gst.match \\
+            M31-B05_15x30-126_gst.matchfake M31-B05_15x30-126_0.5-1.9.sfh \\
             -zinc -dAvy=0 -dAv=1.9 > M31-B05_15x30-126_0.5-1.9.scrn
 
       When I completed this process, I determined the best fit and reran
       that with the -mcdata flag. ::
 
-        $ calcsfh master.sfhparam_0.5 M31-B09_15x30-001.gst.match \
-            M31-B09_15x30-001_gst.matchfake M31-B09_15x30-001_0.2-2.1_best.sfh \
+        $ calcsfh master.sfhparam_0.5 M31-B09_15x30-001.gst.match \\
+            M31-B09_15x30-001_gst.matchfake M31-B09_15x30-001_0.2-2.1_best.sfh \\
             -zinc -mcdata -dAvy=0 -dAv=2.1 > M31-B09_15x30-001_0.2-2.1_best.scrn
 
       I then ran hybridMC::
 
-        $ hybridMC M31-B09_15x30-001_0.2-2.1_best.sfh.dat \
+        $ hybridMC M31-B09_15x30-001_0.2-2.1_best.sfh.dat \\
             M31-B09_15x30-001_0.2-2.1_best.mcmc -tint=2.0 -nmc=10000 -dt=0.015
 
       I originally zcombined just the best fit files and the hmc results
       and then merged them::
 
-        $ zcombine -bestonly M31-B09_15x30-001_0.2-2.1_best.sfh \
+        $ zcombine -bestonly M31-B09_15x30-001_0.2-2.1_best.sfh \\
             > M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.sfh
 
-        $ zcombine -unweighted -medbest -jeffreys \
-            -best=M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.sfh \
-            M31-B09_15x30-001_0.2-2.1_best.mcmc \
+        $ zcombine -unweighted -medbest -jeffreys \\
+            -best=M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.sfh \\
+            M31-B09_15x30-001_0.2-2.1_best.mcmc \\
             > M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.mcmc.sfh
 
-        $ zcmerge M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.sfh \
-            M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.mcmc.sfh -absolute \
+        $ zcmerge M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.sfh \\
+            M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.mcmc.sfh -absolute \\
             > M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.total.sfh
 
       More recently, after consulting with Andy, I also added in the
@@ -92,37 +110,96 @@ def star_formation_histories():
 
       Then I used zcombine and merged with the hmc results::
 
-        $ zcombine M31-B09_15x30-001_allfits.sfh \
+        $ zcombine M31-B09_15x30-001_allfits.sfh \\
             > M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.best_dust.sfh
 
-        $ zcmerge M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.best_dust.sfh \
-            M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.mcmc.sfh -absolute \
+        $ zcmerge M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.best_dust.sfh \\
+            M31-B09_15x30-001_0.2-2.1_best.zc.fit_unbinned.mcmc.sfh -absolute \\
             > M31-B09_15x30-001.zc.fit_unbinned.final.sfh
 
       "
 
+    Brick grid model
+    ----------------
+    Each PHAT brick is divided into an n*m grid (n=15 and m=30;
+    `Background`_), and the grid cells are labeled by integer from 1 to
+    n*m. Viewing a brick with north and west approximately up and to the
+    right, respectively, the cells are arranged according to the diagram::
+
+        n+-----------+-----------+-----------+-----------+
+         |         1 |         2 |    ...    |      m    |
+      n-1+-----------+-----------+-----------+-----------+
+         |     1*m+1 |     1*m+2 |    ...    |    2*m    |      ^
+      n-2+-----------+-----------+-----------+-----------+      N
+         |     2*m+1 |     2*m+2 |    ...    |    3*m    |  < E   W >
+      n-3+-----------+-----------+-----------+-----------+      S
+      ...|    ...    |    ...    |    ...    |    ...    |      v
+         +-----------+-----------+-----------+-----------+
+         | (n-1)*m+1 | (n-1)*m+2 |    ...    |    n*m    |
+      i=0+-----------+-----------+-----------+-----------+
+       j=0           1                ...   m-1
+
+    An array coordinate system (denoted by i and j) is assigned with the
+    origin set at the outside corner of the cell labeled ``(n-1)*m+1`` so
+    that i (rows) and j (columns) increase northward and eastward,
+    respectively. As an image, where each grid cell corresponds to an image
+    pixel, the pixel coordinates of a point i,j in the grid are x = j + 0.5
+    and y = i + 0.5.
+
+    A consequence of this coordinate system is that *the cell numbers do
+    not correspond to their actual order in the grid array*. This can be
+    confusing because cell 1 is not the first cell in the array (i,j =
+    0,0). Rather, in a flattened n*m array (e.g., `numpy.ravel`), cell
+    ``(n-1)*m+1`` is first and cell m is last. The cell numbers should be
+    treated as labels that happen to be integers.
 
     SFH data
-    ========
-    For each brick, I received the following files from Alexia:
+    --------
+    The SFH analysis described above resulted in the following files for
+    each brick:
 
-    - List of RA,dec coordinates of the corners of all cells in the brick
-      (file kind [1]_ 'corners')
-    - List of best-fit Av,dAv extinction parameters of all cells in the
-      brick (file kind 'extpar')
+    - 'corners' file: a list of RA,dec coordinates of the corners of each
+      cells in the brick.
+    - 'extpar' file: a list of best-fit Av and dAv extinction parameters for
+      each cell in the brick.
     - For each cell,
 
-      - F475W,F814W ".gst" photometry file (kind 'phot'), and the SFH and
-        CMD calcsfh output files (kinds 'sfh' and 'cmd') from the best-fit
-        SFH solution
+      - 'phot' file: the F475W,F814W ".gst" photometry.
+      - 'sfh' file: the SFH data for the best-fit modeled CMD from calcsfh.
+      - 'cmd' file: the best-fit modeled CMD data from calcsfh.
 
-    .. [1] "kind" refers to the different types of files tracked by
-       `m31flux.config.path`.
+    The 'sfh' files were processed with zcombine to create 'bestzcb' files,
+    tables of SFR, metallicity, and cumulative SF (CSF) versus age.
 
-    The 'sfh' files were processed with zcombine to create tables of SFR
-    versus age ('bestzcb').
+    The MATCH procedure for a cell is summarized as follows::
+
+      calcsfh par phot fake sfh -zinc -mcdata -dAvy=0 -dAv=dAv
+      # other output: cmd, hmcdat
+      zcombine sfh -bestonly > bestzcb
+
+    .. In case additional files are added in the future, should probably
+       stick to a naming scheme similar to this::
+
+         hybridMC hmcdat hmcsfh -tint=2.0 -nmc=10000 -dt=0.015
+         zcombine -unweighted -medbest -jeffreys -best=bestzcb hmcsfh > hmczcb
+         zcmerge bestzcb hmczcb -absolute > besthmczcb
+
+         zcombine extsyssfh* > extsyszcb  # extinction systematics
+         zcmerge bestzcb extsyszcb -absolute > bestextzcb
+
+         zcombine isosyssfh* > isosyszcb  # isochrone systematics
+         zcmerge bestzcb isosyszcb -absolute > bestisozcb
+
+    .. note:: Preliminary modeled FUV maps showed some cells to have
+       exceptionally high modeled-to-observed FUV flux ratios. Alexia found
+       that the photometry for these cells had some contamination from
+       diffraction spikes. Alexia has applied more stringent cuts to these
+       cells to clean up the diffraction artifacts, and then she reran
+       their SFHs. *The 'sfh' files in this project are the original,
+       uncleaned files!*
 
     """
+    import m31flux
     m31flux.process_sfh.make_bestzcb()
     return
 
@@ -131,60 +208,225 @@ def synthetic_flux_maps(band):
     """
     Synthetic flux maps
     ===================
-    The SFH of each cell ('bestzcb') was used to calculate its flux in a
-    given filter. The flux values were assembled into modeled flux maps for
-    each brick, and the brick maps were added together using Montage to
-    produce a modeled flux map of M31 over the PHAT survey area.
+    The SFHs of the brick grid cells were used to model broadband flux in
+    various filters over the PHAT survey area. This was done by summing the
+    SEDs of SSP models weighted by the SFH of a given cell, convolving the
+    integrated SED with the response curve of a chosen filter to calculate
+    the broadband flux from the cell, and then assembling the flux values
+    from all cells into brick maps that were then mosaicked to create a
+    full synthetic flux map. The details of each step are given below.
 
-    The following bands were considered:
+    A set of SSP models and their present-day SEDs were generated using
+    FSPS assuming the Padova isochrones, the BaSeL stellar library, and a
+    Kroupa IMF. In a given cell, the SSP metallicities were set to either
+    the mean metallicity over the last 100 Myr of the SFH, or the most
+    recent metallicity where SFR > 0 if all SFRs over the last 100 Myr were
+    zero. The SSPs were aged from log(age)=5.500 to 10.175 in steps of
+    0.025.
 
-    - GALEX FUV ('mod_fuv_int' for intrinsic flux, 'mod_fuv_red' for
-      reddened flux based on the best-fit extinction parameters)
-    - GALEX NUV ('mod_nuv_int' for intrinsic, 'mod_nuv_red' for reddened)
+    For each cell, the first age bin of the SFH ('bestzcb' file) was
+    rescaled to include all ages up to the present, and then the age
+    resolution of the full [1]_ SFH was increased to 20 samples per age
+    bin. The subsampled SFH was interpolated to the set of SSP ages, and
+    the SED at each SSP age was weighted by the mass from the SFH at that
+    age. The SEDs were then summed to derive the integrated modeled
+    intrinsic (i.e., unreddened) SED for the cell.
 
-    Images from the GALEX Deep Imaging Survey (DIS) were used to produce
-    maps of observed FUV ('galex_fuv') and NUV ('galex_nuv') flux.
+    The measured Av and dAv parameters for the cell were used to derive a
+    reddened SED. First, the intrinsic SED was divided into 30 [2]_
+    identical component SEDs. Each component was reddened according to the
+    Cardelli et al. (1989) extinction curve with a uniform random Av drawn
+    between Av and Av+dAv. The reddened components were then summed back
+    together to obtain the modeled reddened SED for the cell.
+
+    The intrinsic and reddened apparent magnitudes in a given filter were
+    computed by convolving the modeled SEDs with the filter response curve
+    and projecting to a distance modulus of 24.47 (McConnachie et al.,
+    2005). The magnitudes and the appropriate magnitude-to-flux conversion
+    formulae (see the filter list below) were used to derive the intrinsic
+    and reddened broadband fluxes from the cell.
+
+    After the fluxes in a filter were computed for all cells in a brick,
+    the flux values were assembled to create a modeled flux map for the
+    brick ('<band>' file [3]_ ). A 2D least squares method was used to find
+    the best-fit WCS for the brick map given the coordinates of the cell
+    corners (from the 'corners' file). The maps for all bricks were then
+    combined into a mosaic ('<band>.mosaic' file) using Montage (with all
+    intermediate files placed in the ('<band>.montage' directory),
+    resulting in the final modeled flux map covering the PHAT survey area.
+    The output grid of the mosaic, defined by the mosaic template header
+    ('<band>.hdr' file), has a pixel scale of 23.75 arcsec, or 434 pc (see
+    `star_formation_histories`), and was automatically chosen by Montage as
+    the best fit to the collection of input brick maps.
+
+    Modeled intrinsic and reddened flux maps ('*_int' and '*_red' files)
+    were created for the following filters:
+
+    ========= ============================ ================ ======
+    filter    flux(erg s-1 cm-2 A-1) / cps AB mag zeropoint source
+    ========= ============================ ================ ======
+    GALEX FUV 1.40e-15                     18.82            [4]_
+    GALEX NUV 2.06e-16                     20.08            [4]_
+    ========= ============================ ================ ======
+
+    ('mod_fuv_int', 'mod_fuv_red', 'mod_nuv_int', and 'mod_nuv_red' files.)
+
+    A pixel weights map ('weights' file) representing the coverage of the
+    output mosaic grid by the available PHAT data was also produced during
+    mosaicking. Mosaic pixels fully within the PHAT survey border have a
+    weight of 1, pixels fully outside the border have a weight of 0, and
+    pixels on the border have weights between 0 and 1 depending on the
+    fraction of the pixel area within the survey border.
+
+    .. [1] No maximum age limit was applied to the SFHs.
+    .. [2] 30 components resulted in a less then 0.1% error in the reddened
+       spectrum when compared with a much higher number of components.
+    .. [3] "<band>" is a placeholder for a specific filter name.
+    .. [4] http://galexgi.gsfc.nasa.gov/docs/galex/FAQ/counts_background.html
+
+
+    Observed flux maps
+    ==================
+    Observed flux maps for each of the filters used for the modeled flux
+    maps were created as described below.
+
+    GALEX FUV and NUV
+    -----------------
+    The observed FUV and NUV maps were constructed from the intensity maps
+    of four tiles in the GALEX Deep Imaging Survey (DIS) covering the PHAT
+    survey area ('galex_fuv' and 'galex_nuv' files):
+
+    - PS_M31_MOS00-[f|n]d-int.fits
+    - PS_M31_MOS07-[f|n]d-int.fits
+    - PS_M31_MOS08-[f|n]d-int.fits
+    - PS_M31_MOS10-[f|n]d-int.fits
+
+    The images were converted from units of counts per second into flux
+    using the formulae listed in `Synthetic flux maps`_ and then assembled
+    into mosaics using Montage and the same template header as the modeled
+    flux mosaics. The individual GALEX tiles had slightly differing
+    background levels, however, so Montage was used to match the
+    backgrounds during the mosaicking process.
+
+    A small amount of background UV flux was present in the FUV and NUV
+    mosaics, primarily due to scattering of UV photons from hot stars in
+    the Galaxy. The background was measured in a rectangular aperture in an
+    off-galaxy area relatively devoid of stars in the reprojected,
+    background matched tile PS_M31_MOS07 ('galex_fuv.bg' and 'galex_nuv.bg'
+    files). The measured background values were 3.69e-19 and 5.88e-19
+    flux/arcsec2 (2.5e-16 and 2.3e-16 total flux per mosaic pixel) in FUV
+    and NUV, respectively. These values were subtracted from the FUV and
+    NUV mosaics.
 
     """
+    import m31flux
     func_dict = {
         'mod_fuv_red': m31flux.fluxmap.make_mod_fuv_red,
         'mod_fuv_int': m31flux.fluxmap.make_mod_fuv_int,
         'galex_fuv': m31flux.fluxmap.make_galex_fuv,
+        'mod_nuv_red': m31flux.fluxmap.make_mod_nuv_red,
+        'mod_nuv_int': m31flux.fluxmap.make_mod_nuv_int,
+        'galex_nuv': m31flux.fluxmap.make_galex_nuv,
         }
     func = func_dict[band]
     func()
-
     return
 
 
-def issues():
+def goals_and_issues():
     """
+    Goals
+    =====
+    - Create a modeled Spitzer 24um map
+
+      - Need some sort of dust emission SED that can be normalized to the
+        calculated total IR luminosity (integrated difference betweent the
+        intrinsic and reddened SEDs). Then the 24um response curve can be
+        applied to get the 24 micron flux.
+
+    - Identify and attempt to understand any flux outliers
+    - Extinction map (Av+dAv?). Compare with JD's dust map.
+    - Compare map of mean SFRs from SFHs with map of SFRs from standard flux
+      calibrations (e.g., Kennicutt & Evans) given the observed flux.
+
+
     Issues
     ======
+    - For the "hot" cells caused by diffraction spike artifacts in the
+      photometry, is it enough to identify them as such, or should Alexia
+      redo their SFHs using more stringent photometric cuts?
     - An exclude gate was used to mask out the RGB while fitting the CMDs. Has
       anyone assessed the maximum reliable age limit this places on the SFHs?
       A quick method would be to find the oldest isochrone that is visible
       outside the exclude gate.
-
-    - Create Spitzer 24um images, too?
 
     """
     return
 
 
 def main():
-    """First argument is a key specifying which function to run. Additional
-    arguments are passed as options.
+    """Command line interface."""
+    def print_doc(args):
+        doc_dict = {
+            'main': __doc__,
+            'star_formation_histories': star_formation_histories.__doc__,
+            'synthetic_flux_maps': synthetic_flux_maps.__doc__,
+            'goals_and_issues': goals_and_issues.__doc__,
+            }
+        print(doc_dict[args.name])
+        return
 
-    """
-    func_dict = {
-        'SFH_data': star_formation_histories,
-        'flux_maps': synthetic_flux_maps,
-        }
+    def exec_star_formation_histories(args):
+        star_formation_histories()
+        return
 
-    key = sys.argv[1]
-    func = func_dict[key]
-    func(*sys.argv[2:])
+    def exec_synthetic_flux_maps(args):
+        synthetic_flux_maps(args.band)
+        return
+
+
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest='subparser')
+
+    helpstr = 'Show the documentation for the module or the given function.'
+    parser0 = subparsers.add_parser('doc', help=helpstr, description=helpstr)
+    parser0.set_defaults(func=print_doc)
+
+    helpstr = 'Optional function name.'
+    choices = (
+        'main',
+        'star_formation_histories',
+        'synthetic_flux_maps',
+        'goals_and_issues',
+        )
+    parser0.add_argument('name', nargs='?', choices=choices,
+                         default='main', help=helpstr)
+
+
+    helpstr = 'Run `main.star_formation_histories`.'
+    parser1 = subparsers.add_parser('star_formation_histories', help=helpstr,
+                                    description=helpstr)
+    parser1.set_defaults(func=exec_star_formation_histories)
+
+
+    helpstr = 'Run `main.synthetic_flux_maps`.'
+    parser2 = subparsers.add_parser('synthetic_flux_maps', help=helpstr,
+                                    description=helpstr)
+    parser2.set_defaults(func=exec_synthetic_flux_maps)
+
+    helpstr = (
+        'The band in which to calculate flux. See the '
+        '`main.synthetic_flux_maps` docstring for more information.'
+        )
+    choices = (
+        'mod_fuv_int', 'mod_fuv_red', 'galex_fuv',
+        'mod_nuv_int', 'mod_nuv_red', 'galex_nuv'
+        )
+    parser2.add_argument('band', choices=choices, help=helpstr)
+
+
+    args = parser.parse_args()
+    args.func(args)
 
     return
 

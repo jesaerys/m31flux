@@ -8,97 +8,70 @@ Configuration for `m31flux`.
 
 This module contains constants and functions that locate data (both
 existing files and files created during analysis) and define how it is
-structured. The main features are,
+structured. The main feature is a `path` function to keep track of all
+project files. Every tracked file has an associated "kind" [1]_, a string
+that uniquely identifies the file or the group/category of files it belongs
+to. This system completely eliminates the need to hardcode filenames in any
+module or analysis script; only this config file (namely, the `_KIND_DICT`
+dictionary) has to be edited to use the `m31flux` package.
 
-1. A `path` function, which keeps track of all project files. This
-   completely eliminates the need to hardcode filenames in any module or
-   analysis script. Paths to particular files can be changed and new files
-   can be added by modifying the `_KIND_DICT`.
+Also defined are various project-specific things like brick grid
+parameters, galaxy and modeling parameters, and parsers for nonstandard
+files.
 
-2. Other project-specific things like galaxy and modeling parameters and
-   parsers for nonstandard files.
-
-3. A description of how the PHAT bricks are gridded and a model for
-   mapping the data to the grids. See `Brick grid model`_ below.
+.. [1] Use of the word "kind" will generally refer to the `path` argument.
+   Also, a string in single quotes used as an adjective for a file
+   implicitly refers to the file's kind. For example, the phrase "'sfh'
+   files" means files of kind 'sfh', i.e., the files returned by
+   ``path('sfh')``.
 
 
 Constants
 ---------
 
-================== ========================================================
-`BRICK_LIST`       List of all PHAT bricks available in the project in
-                   numerical order.
-`NROW`             Number of rows in a brick grid.
-`NCOL`             Number of columns in a brick grid.
-`CELL_LIST`        List of all cells in a brick grid in numerical order.
-`SORT`             Indices that sort a list of cells in numerical order to
-                   grid order, and vice versa.
-`GALEX_FIELD_LIST` List of all GALEX DIS fields (or tiles) covering the
-                   PHAT survey area, in numerical order.
-`GALEX_CHIP_X0`    Approximate x pixel coordinate of chip center.
-`GALEX_CHIP_Y0`    Approximate y pixel coordinate of chip center.
-`GALEX_CHIP_RAD`   Approximate chip radius in pixels, slightly undersized.
-`DMOD`             Distance modulus.
-`DIST_PC`          Distance in pc.
-`DIST_CM`          Distance in cm.
-`INC`              Disk inclination angle in degrees.
-`IMF`              Initial mass function.
-`DUST_CURVE`       Dust curve.
-`_KIND_DICT`       Path elements used to build paths to the different file
-                   kinds.
-`EXTPAR_DICT`      Dictionary of the best-fit Av and dAv extinction
-                   parameters for every cell.
-`MISSING_CELLS`    List of (brick, cell) tuples for where there is no data.
-================== ========================================================
+==================== ========================================================
+`BRICK_LIST`         Names of all PHAT bricks available in the project in
+                     numerical order.
+`NROW`               Number of rows in a brick grid.
+`NCOL`               Number of columns in a brick grid.
+`CELL_LIST`          Names of all cells in a brick grid in numerical order.
+`SORT`               Indices that sort a list of cells in numerical order
+                     into grid order, and vice versa.
+`GALEX_TILE_LIST`    Names of all GALEX DIS tiles/fields covering the PHAT
+                     survey area in numerical order.
+`GALEX_CHIP_X0`      Approximate x pixel coordinate of chip center.
+`GALEX_CHIP_Y0`      Approximate y pixel coordinate of chip center.
+`GALEX_CHIP_RAD`     Approximate chip radius in pixels, slightly
+                     undersized.
+`GALEX_BG_RECTANGLE` xmin, xmax, ymin, and ymax (array) coordinates of the
+                     rectangular aperture for measuring the FUV and NUV
+                     background/foreground level.
+`DIST`               Distance to M31.
+`INC`                M31 disk inclination angle.
+`IMF`                Initial mass function.
+`DUST_CURVE`         Dust curve.
+`_KIND_DICT`         Paths to various file kinds.
+`EXTPAR_DICT`        Dictionary of the best-fit Av and dAv extinction
+                     parameters for every cell.
+`MISSING_CELLS`      List of (brick, cell) tuples for where there is no data.
+==================== ========================================================
 
 
 Functions
 ---------
 
 ================== =======================================================
-`open_extparfile`  Create a table from a file of kind 'extpar'.
-`open_cornersfile` Create a table from a file of kind 'corners'.
+`open_extparfile`  Create a table from an 'extpar' file.
+`open_cornersfile` Create a table from a 'corners' file.
 `cornergrid`       Reshape a table of cell corner coordinates into a grid.
 ================== =======================================================
 
-
-Brick grid model
-----------------
-
-There are 23 bricks in the PHAT survey, labeled by integer starting with 1.
-Each brick is divided into an n*m grid, and the grid cells are labeled by
-integer from 1 to n*m. Viewing a brick with north and west approximately up
-and to the right, respectively, the cells are arranged according to the
-diagram::
-
-    n+0.5     +-----------+-----------+-----------+-----------+
-    n      n-1|         1 |         2 |    ...    |      m    |
-    n-0.5     +-----------+-----------+-----------+-----------+
-    n-1    n-2|     1*m+1 |     1*m+2 |    ...    |    2*m    |      ^
-    n-1.5     +-----------+-----------+-----------+-----------+      N
-    n-2    n-3|     2*m+1 |     2*m+2 |    ...    |    3*m    |  < E   W >
-    n-2.5     +-----------+-----------+-----------+-----------+      S
-    ...    ...|    ...    |    ...    |    ...    |    ...    |      v
-    1.5       +-----------+-----------+-----------+-----------+
-    1      i=0| (n-1)*m+1 | (n-1)*m+2 |    ...    |    n*m    |
-  y=0.5       +-----------+-----------+-----------+-----------+
-                  j=0           1          ...         m-1
-           x=0.5    1    1.5    2    2.5   ...   m-0.5   m   m+0.5
-
-The convention defined in this module is to set the grid origin at cell
-number ``(n-1)*m+1`` with the rows (i) increasing upward and the columns
-(j) increasing to the right in the diagram. In addition, a pixel coordinate
-system is assigned such that the center of the origin cell has pixel
-coordinates x,y = 1,1, with x and y increasing with j and i, respectively.
-
-*The cell numbers do not reflect their actual order in the grid array under
-this convention!* This is can be confusing because cell 1 is not the first
-cell. Rather, in a flattened n*m array (e.g., `numpy.ravel`), cell
-``(n-1)*m+1`` is first and cell m is last. The cell numbers are merely
-labels that happen to be integers.
-
 """
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 import astrogrid
+import astropy.coordinates
 import astropy.table
 import numpy as np
 import os
@@ -109,7 +82,7 @@ import os
 # =====================================
 
 BRICK_LIST = np.array([2]+range(4,24))
-"""List of all PHAT bricks available in the project in numerical order."""
+"""Names of all PHAT bricks available in the project in numerical order."""
 
 NROW = 15
 """Number of rows in a brick grid."""
@@ -118,15 +91,14 @@ NCOL = 30
 """Number of columns in a brick grid."""
 
 CELL_LIST = np.arange(NROW*NCOL) + 1
-"""List of all cells in a brick grid in numerical order."""
+"""Names of all cells in a brick grid in numerical order."""
 
 SORT = np.arange(NROW*NCOL).reshape((NROW, NCOL))[::-1].ravel()
-"""Indices that sort a list of cells in numerical order to grid order, and
-vice versa.
+"""Indices that sort a list of cell names in numerical order into grid
+order, and vice versa.
 
 "Grid order" refers to the order of the cells in a flattened array (e.g.,
-`numpy.ravel`). See the main documentation of `m31flux.config` for a
-description of brick grid coordinate conventions.
+`numpy.ravel`).
 
 """
 
@@ -135,14 +107,11 @@ description of brick grid coordinate conventions.
 # GALEX
 # =====
 
-GALEX_FIELD_LIST = [0, 7, 8, 9, 10]
-"""List of all GALEX DIS fields (or tiles) covering the PHAT survey area,
-in numerical order.
+GALEX_TILE_LIST = [0, 7, 8, 9, 10]
+"""Names of all GALEX DIS tiles/fields covering the PHAT survey area in
+numerical order.
 
 """
-
-#GALEX_FUV_FOREGROUND_CPS = 8.3573867e-4  # m31flux.util._calc_galex_foreground
-#GALEX_NUV_FOREGROUND_CPS = 5.393513e-3  # m31flux.util._calc_galex_foreground
 
 GALEX_CHIP_X0 = 1920
 """Approximate x pixel coordinate of chip center."""
@@ -153,27 +122,31 @@ GALEX_CHIP_Y0 = 1920
 GALEX_CHIP_RAD = 1400
 """Approximate chip radius in pixels, slightly undersized."""
 
+GALEX_BG_RECTANGLE = (75, 145, 65, 135)
+"""xmin, xmax, ymin, and ymax (array) coordinates of the rectangular
+aperture for measuring the FUV and NUV background/foreground levels.
+
+The coordinates refer specifically to the 'galex_fuv.bg' and 'galex_nuv.bg'
+files.
+
+"""
+
 
 
 # M31 and other parameters
 # ========================
 
-DMOD = 24.47
-"""Distance modulus.
+DIST = astropy.coordinates.Distance(distmod=24.47)
+"""Distance to M31.
 
 McConnachie, A. W., Irwin, M. J., Ferguson, A. M. N., et al. 2005, MNRAS,
 356, 979.
 
 """
 
-DIST_PC = 10**(DMOD/5. + 1)
-"""Distance in pc."""
 
-DIST_CM = DIST_PC * 3.08567758e18
-"""Distance in cm."""
-
-INC = 78.0
-"""Disk inclination angle in degrees.
+INC = astropy.coordinates.Angle(78.0, unit='deg')
+"""M31 disk inclination angle.
 
 Tully, R. B. 1994, yCat, 7145, 0.
 
@@ -202,80 +175,66 @@ _GALEX_DIR = '/Users/Jake/Research/Storage/M31/GALEX/DIS'
 
 _KIND_DICT = {
     'extpar':  (_SFH_DIR, 'B{0:02d}', 'b{0:02d}_region_AvdAv.dat'),
-    'corners': (_SFH_DIR, 'B{0:02d}', 'M31-B{0:02d}_15x30_subregion-exact-vertices.dat'),
-    'phot':    (_SFH_DIR, 'B{0:02d}', 'phot', 'M31-B{0:02d}_15x30-{1:03d}.gst.match'),
-    'sfh':     (_SFH_DIR, 'B{0:02d}', 'sfh',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh'),
-    'cmd':     (_SFH_DIR, 'B{0:02d}', 'cmd',  'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh.cmd'),
-    'bestzcb': (_ANALYSIS_DIR, 'b{0:02d}', 'bestzcb', 'b{0:02d}-{1:03d}_best.zcb'),
+    'corners': (_SFH_DIR, 'B{0:02d}',
+                'M31-B{0:02d}_15x30_subregion-exact-vertices.dat'),
+    'phot':    (_SFH_DIR, 'B{0:02d}', 'phot',
+                'M31-B{0:02d}_15x30-{1:03d}.gst.match'),
+    'sfh':     (_SFH_DIR, 'B{0:02d}', 'sfh',
+                'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh'),
+    'cmd':     (_SFH_DIR, 'B{0:02d}', 'cmd',
+                'M31-B{0:02d}_15x30-{1:03d}_{2:.1f}-{3:.1f}_best.sfh.cmd'),
+    'bestzcb': (_ANALYSIS_DIR, 'b{0:02d}',
+                'bestzcb', 'b{0:02d}-{1:03d}_best.zcb'),
 
     'mod_fuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_int.fits'),
-    #'mod_fuv_int.add': (_ANALYSIS_DIR, 'mod_fuv_int.fits'),
-    #'mod_fuv_int.density': (_ANALYSIS_DIR, '_mod_fuv_int', 'input', 'b{0:02d}_mod_fuv_int_density.fits'),
-    #'mod_fuv_int.reproject': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density.fits'),
-    #'mod_fuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density.fits'),
-    #'mod_fuv_int.area': (_ANALYSIS_DIR, '_mod_fuv_int', 'reproject', 'hdu0_b{0:02d}_mod_fuv_int_density_area.fits'),
-    #'mod_fuv_int.area.add': (_ANALYSIS_DIR, '_mod_fuv_int', 'add', 'mod_fuv_int_density_area.fits'),
-    #'mod_fuv_int.hdr': 'mod_fuv_red.hdr',
+    'mod_fuv_int.mosaic': (_ANALYSIS_DIR, 'mod_fuv_int.fits'),
+    'mod_fuv_int.montage': (_ANALYSIS_DIR, '_mod_fuv_int'),
+    'mod_fuv_int.hdr': 'mod_fuv_red.hdr',
 
     'mod_fuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_fuv_red.fits'),
-    #'mod_fuv_red.add': (_ANALYSIS_DIR, 'mod_fuv_red.fits'),
-    #'mod_fuv_red.density': (_ANALYSIS_DIR, '_mod_fuv_red', 'input', 'b{0:02d}_mod_fuv_red_density.fits'),
-    #'mod_fuv_red.reproject': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density.fits'),
-    #'mod_fuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density.fits'),
-    #'mod_fuv_red.area': (_ANALYSIS_DIR, '_mod_fuv_red', 'reproject', 'hdu0_b{0:02d}_mod_fuv_red_density_area.fits'),
-    #'mod_fuv_red.area.add': (_ANALYSIS_DIR, '_mod_fuv_red', 'add', 'mod_fuv_red_density_area.fits'),
-    #'mod_fuv_red.hdr': (_ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
+    'mod_fuv_red.mosaic': (_ANALYSIS_DIR, 'mod_fuv_red.fits'),
+    'mod_fuv_red.montage': (_ANALYSIS_DIR, '_mod_fuv_red'),
+    'mod_fuv_red.hdr': (_ANALYSIS_DIR, '_mod_fuv_red', 'template.hdr'),
+    'weights': (_ANALYSIS_DIR, 'weights.fits'),
 
     'galex_fuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-fd-int.fits'),
-    #'galex_fuv.add': (_ANALYSIS_DIR, 'galex_fuv.fits'),
-    #'galex_fuv.density': (_ANALYSIS_DIR, '_galex_fuv', 'input', 'MOS{0:02d}_galex_fuv_density.fits'),
-    #'galex_fuv.reproject': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density.fits'),
-    #'galex_fuv.reproject.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density.fits'),
-    #'galex_fuv.area': (_ANALYSIS_DIR, '_galex_fuv', 'reproject', 'hdu0_MOS{0:02d}_galex_fuv_density_area.fits'),
-    #'galex_fuv.area.add': (_ANALYSIS_DIR, '_galex_fuv', 'add', 'galex_fuv_density_area.fits'),
-    #'galex_fuv.hdr': 'mod_fuv_red.hdr',
+    'galex_fuv.mosaic': (_ANALYSIS_DIR, 'galex_fuv.fits'),
+    'galex_fuv.montage': (_ANALYSIS_DIR, '_galex_fuv'),
+    'galex_fuv.hdr': 'mod_fuv_red.hdr',
+    'galex_fuv.bg': (_ANALYSIS_DIR, '_galex_fuv', 'corrected',
+                     'hdu0_PS_M31_MOS07-fd-int_density.fits'),
 
     'mod_nuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_int.fits'),
-    #'mod_nuv_int.add': (_ANALYSIS_DIR, 'mod_nuv_int.fits'),
-    #'mod_nuv_int.density': (_ANALYSIS_DIR, '_mod_nuv_int', 'input', 'b{0:02d}_mod_nuv_int_density.fits'),
-    #'mod_nuv_int.reproject': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density.fits'),
-    #'mod_nuv_int.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density.fits'),
-    #'mod_nuv_int.area': (_ANALYSIS_DIR, '_mod_nuv_int', 'reproject', 'hdu0_b{0:02d}_mod_nuv_int_density_area.fits'),
-    #'mod_nuv_int.area.add': (_ANALYSIS_DIR, '_mod_nuv_int', 'add', 'mod_nuv_int_density_area.fits'),
-    #'mod_nuv_int.hdr': 'mod_fuv_red.hdr',
+    'mod_nuv_int.mosaic': (_ANALYSIS_DIR, 'mod_nuv_int.fits'),
+    'mod_nuv_int.montage': (_ANALYSIS_DIR, '_mod_nuv_int'),
+    'mod_nuv_int.hdr': 'mod_fuv_red.hdr',
 
     'mod_nuv_red': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_red.fits'),
-    #'mod_nuv_red.add': (_ANALYSIS_DIR, 'mod_nuv_red.fits'),
-    #'mod_nuv_red.density': (_ANALYSIS_DIR, '_mod_nuv_red', 'input', 'b{0:02d}_mod_nuv_red_density.fits'),
-    #'mod_nuv_red.reproject': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density.fits'),
-    #'mod_nuv_red.reproject.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density.fits'),
-    #'mod_nuv_red.area': (_ANALYSIS_DIR, '_mod_nuv_red', 'reproject', 'hdu0_b{0:02d}_mod_nuv_red_density_area.fits'),
-    #'mod_nuv_red.area.add': (_ANALYSIS_DIR, '_mod_nuv_red', 'add', 'mod_nuv_red_density_area.fits'),
-    #'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
+    'mod_nuv_red.mosaic': (_ANALYSIS_DIR, 'mod_nuv_red.fits'),
+    'mod_nuv_red.montage': (_ANALYSIS_DIR, '_mod_nuv_red'),
+    'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
 
     'galex_nuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-nd-int.fits'),
-    #'galex_nuv.add': (_ANALYSIS_DIR, 'galex_nuv.fits'),
-    #'galex_nuv.density': (_ANALYSIS_DIR, '_galex_nuv', 'input', 'MOS{0:02d}_galex_nuv_density.fits'),
-    #'galex_nuv.reproject': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density.fits'),
-    #'galex_nuv.reproject.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density.fits'),
-    #'galex_nuv.area': (_ANALYSIS_DIR, '_galex_nuv', 'reproject', 'hdu0_MOS{0:02d}_galex_nuv_density_area.fits'),
-    #'galex_nuv.area.add': (_ANALYSIS_DIR, '_galex_nuv', 'add', 'galex_nuv_density_area.fits'),
-    #'galex_nuv.hdr': 'mod_fuv_red.hdr'
+    'galex_nuv.mosaic': (_ANALYSIS_DIR, 'galex_nuv.fits'),
+    'galex_nuv.montage': (_ANALYSIS_DIR, '_galex_nuv'),
+    'galex_nuv.hdr': 'mod_fuv_red.hdr',
+    'galex_nuv.bg': (_ANALYSIS_DIR, '_galex_nuv', 'corrected',
+                     'hdu0_PS_M31_MOS07-nd-int_density.fits'),
     }
-"""Path elements used to build paths to the different file kinds.
+"""Paths to various file kinds.
 
 This dictionary is used by `_path` and defines the locations of all file
-kinds in the project. Each file kind is specified by a tuple of path
-elements (strings) which are later combined into a single string using
+kinds in the project. Each kind is specified by a tuple of path elements
+(strings) which are later combined into a single string using
 `os.path.join`.
 
 The elements may contain format strings as placeholders for inserting one
-or more of the values in a standard tuple, ``(field, subfield, av, dav)``
+or more of the values in a standard tuple, ``(field, subfield, av, dav)``,
 when `_path` is actually called. The first two values are documented in
-`_path`, and the last two refer to Av and dAv extinction parameters. The
-values are referenced in a format string according to their tuple index.
-For example, putting ``'{1:02d}'`` in a path element will insert the value
-of ``subfield`` formatted as a padded two-column integer.
+`_path`, and the last two refer to the Av and dAv extinction parameters.
+The values are referenced in a format string according to their tuple
+index. For example, putting ``'{1:02d}'`` in a path element will insert the
+value of ``subfield`` formatted as a padded two-column integer.
 
 To link one file kind to another, set the kind's value to the name of the
 other kind. This is useful if two kinds actually share the same file.
@@ -289,13 +248,32 @@ def _path(kind, extpar_dict, **kwargs):
     Parameters
     ----------
     kind : str
-        The type of file. The exact set of files returned is controlled
-        using keyword arguments. See the Notes section below.
-    extpar_dict : dictionary
-        Dictionary of brick grid extinction parameter values as (av, dav)
-        tuples, keyed by (brick, cell) tuples. This dictionary is mandatory
-        as some file names contain av and dav parameter values.
-    field, subfield : int or list of ints, optional
+        File kind. Every tracked file has an associated kind, a string that
+        uniquely identifies the file or the group/category of files it
+        belongs to. The exact set of files returned is controlled using
+        keyword arguments. Valid kinds, listed below, are defined in
+        scripts/main.py in the main m31flux repository (optional suffixes
+        are given in brackets).
+
+        - 'corners'
+        - 'extpar'
+        - 'phot'
+        - 'sfh'
+        - 'cmd'
+        - 'bestzcb'
+        - 'mod_fuv_int[.mosaic|.montage|.hdr]'
+        - 'mod_fuv_red[.mosaic|.montage|.hdr]'
+        - 'galex_fuv[.mosaic|.montage|.hdr|.bg]'
+        - 'mod_nuv_int[.mosaic|.montage|.hdr]'
+        - 'mod_nuv_red[.mosaic|.montage|.hdr]'
+        - 'galex_nuv[.mosaic|.montage|.hdr|.bg]'
+        - 'weights'
+
+    extpar_dict : dict
+        Dictionary of brick grid extinction parameter values as (Av, dAv)
+        tuples keyed by (brick, cell) tuples. This dictionary is required
+        because some paths contain Av and dAv parameter values.
+    field, subfield : int or sequence of ints, optional
         Return the file(s) of type `kind` for a combination of fields and
         subfields. None (default) is equivalent to a list of all fields or
         all subfields. "field" and "subfield" are generic terms that
@@ -303,17 +281,20 @@ def _path(kind, extpar_dict, **kwargs):
         files:
 
         ================ ===== =============================
-        kind category    field subfield
+        type of data     field subfield
         ================ ===== =============================
         PHAT             brick field
         PHAT brick grids brick cell (a.k.a. pixel or region)
         GALEX            tile
         ================ ===== =============================
 
-    missing : list, optional
-        List of (brick, cell) tuples for which no SFH data are available
-        (useful when automatically generating paths so that only valid
-        paths are returned).
+        These keywords are ignored for kinds that do not have fields or
+        subfields.
+
+    missing : sequence, optional
+        (brick, cell) tuples for which no SFH data are available. This is
+        used to avoid returning paths that do not exist. Default is an
+        empty list.
     fillsubfield : bool, optional
         If True (default), any subfields listed in `missing` are added to
         the returned path list as None. If False, all missing subfields are
@@ -321,75 +302,11 @@ def _path(kind, extpar_dict, **kwargs):
 
     Returns
     -------
-    string or list of strings
-        Path, or list of paths, to the given kind. A list is returned
-        whenever the given keywords are insufficient to make an unambiguous
-        path name (e.g., a kind that is fully specified by both `field` and
-        `subfield`, but only `field` is given).
-
-    Notes
-    -----
-    Possible values for the `kind` parameter are:
-
-    corners
-        RA,dec coordinates of the corners of each cell in a brick. See
-        `open_cornersfile` for details.
-    extpar
-        Best-fit Av and dAv extinction parameters for each cell in a brick.
-        See `open_extparfile` for details.
-    phot, sfh, cmd, bestzcb
-        MATCH-related files for a given cell, produced by the following
-        procedure (kind names are in brackets; refer to the MATCH README
-        for further details about these file types)::
-
-          calcsfh par [phot] fake [sfh] -zinc -mcdata -dAvy=0 -dAv=dAv  # other output: [cmd], hmcdat
-          zcombine [sfh] -bestonly > [bestzcb]
-
-        .. note:: In case additional kinds are supported in the future,
-           should probably stick to a naming scheme similar to this::
-
-             hybridMC hmcdat [hmcsfh] -tint=2.0 -nmc=10000 -dt=0.015
-             zcombine -unweighted -medbest -jeffreys -best=[bestzcb] [hmcsfh] > [hmczcb]
-             zcmerge [bestzcb] [hmczcb] -absolute > [besthmczcb]
-
-             zcombine [extsyssfh]* > [extsyszcb]  # extinction systematics
-             zcmerge [bestzcb] [extsyszcb] -absolute > [bestextzcb]
-
-             zcombine [isosyssfh]* > [isosyszcb]  # isochrone systematics
-             zcmerge [bestzcb] [isosyszcb] -absolute > [bestisozcb]
-
-    <band>
-        Field image.
-    <band>.add
-        Final mosaic for the header <band>.hdr. Product of
-        <band>.reproject.add and <band>.area.add.
-    <band>.density
-        Field density image (signal per unit pixel area).
-    <band>.reproject, <band>.area
-        Field density image reprojected to the header <band>.hdr, and the
-        corresponding area file.
-    <band>.reproject.add, <band>.area.add
-        Density image mosaic for the header <band>.hdr, and the
-        corresponding area file.
-    <band>.hdr
-        The WCS header template for the mosaic.
-
-    where <band> may be one of the following:
-
-    mod_fuv_int
-        Intrinsic FUV flux modeled from the SFHs.
-    mod_fuv_red
-        Reddened FUV flux modeled from the SFHs and the Av,dAv extinction
-        model.
-    galex_fuv
-        Observed FUV flux from GALEX.
-    mod_nuv_int
-        Intrinsic NUV flux modeled from the SFHs.
-    mod_nuv_red
-        Reddened NUV flux modeled from the SFHs and the Av,dAv extinction
-        model.
-    galex_nuv
-        Observed NUV flux from GALEX.
+    str or list of strs
+        Paths matching the given `kind`, `field`, and `subfield`. A list is
+        returned when there are multiple matches. A single string is
+        returned when there is only one match, unless `field` and/or
+        `subfield` are specifically given as a sequence.
 
     """
     # Follow any links in _KIND_DICT
@@ -398,12 +315,15 @@ def _path(kind, extpar_dict, **kwargs):
 
     # List of fields
     single_field = False
-    if kind.endswith('.add') or kind.endswith('.hdr'):
+    # kinds and suffixes of kinds without fields
+    kinds = ['weights']
+    suffixes = ['.mosaic', '.montage', '.hdr', '.bg']
+    if kind in kinds or any(kind.endswith(suffix) for suffix in suffixes):
         field = [None]
         single_field = True
     else:
         if 'galex' in kind:
-            allfields = GALEX_FIELD_LIST
+            allfields = GALEX_TILE_LIST
         else:
             allfields = BRICK_LIST
         field =  kwargs.get('field')
@@ -466,13 +386,13 @@ def _path(kind, extpar_dict, **kwargs):
 # =======
 
 def open_extparfile(filename):
-    """Create a table from a file of kind 'extpar'.
+    """Create a table from an 'extpar' file.
 
     An 'extpar' file contains the best-fit Av and dAv extinction parameters
-    for all cells in a single brick. There are three columns: cell number,
-    Av, and dAv. There is one row per cell, and the cells are listed in
-    numerical order. Cells without SFH data have their cell number set to 0
-    and Av and dAv both set to 99.
+    for all cells in a single brick. There are three columns: cell
+    name/number, Av, and dAv. There is one row per cell, and the rows are
+    sorted by cell name in numerical order. Cells without SFH data have
+    their number, Av, and dAv values set to 0, 99, and 99, respectively.
 
     Parameters
     ----------
@@ -488,13 +408,13 @@ def open_extparfile(filename):
     -----
     The columns in the output table are,
 
-    ======= ====================================================
-    columns description
-    ======= ====================================================
-    cell    Cell number
-    av      Av (foreground V-band) extinction parameter value
-    dav     dAv (differential V-band) extinction parameter value
-    ======= ====================================================
+    ====== ====================================================
+    column description
+    ====== ====================================================
+    cell   Cell number
+    av     Av (foreground V-band) extinction parameter value
+    dav    dAv (differential V-band) extinction parameter value
+    ====== ====================================================
 
     """
     table = astropy.table.Table.read(filename, format='ascii')
@@ -505,14 +425,14 @@ def open_extparfile(filename):
 
 
 def open_cornersfile(filename):
-    """Create a table from a file of kind 'corners'.
+    """Create a table from a 'corners' file.
 
     A 'corners' file contains eight columns for the RA and dec coordinates
     of each corner of each cell in a single brick. The corners are numbered
     clockwise with 1 at the xmin,ymax corner and 4 at the xmin,ymin corner.
-    See the main documentation of `m31flux.config` for a description of
-    brick grid coordinate conventions. There is one row per cell, and the
-    cells are listed in numerical order.
+    There is one row per cell, and the rows are sorted by cell name/number
+    in numerical order (although cell name is not actually given as a
+    column in the file).
 
     Parameters
     ----------
@@ -522,24 +442,24 @@ def open_cornersfile(filename):
     Returns
     -------
     astropy.table.Table
-        See Notes for the columns. The cells are listed in numerical order.
+        See Notes for the columns.
 
     Notes
     -----
     The columns in the output table are,
 
-    ======= ===============
-    columns description
-    ======= ===============
-    RA1     RA of corner 1
-    dec1    dec of corner 1
-    RA2     RA of corner 2
-    dec2    dec of corner 2
-    RA3     RA of corner 3
-    dec3    dec of corner 3
-    RA4     RA of corner 4
-    dec4    dec of corner 4
-    ======= ===============
+    ====== ===============
+    column description
+    ====== ===============
+    RA1    RA of corner 1
+    dec1   dec of corner 1
+    RA2    RA of corner 2
+    dec2   dec of corner 2
+    RA3    RA of corner 3
+    dec3   dec of corner 3
+    RA4    RA of corner 4
+    dec4   dec of corner 4
+    ====== ===============
 
     """
     table = astropy.table.Table.read(filename, format='ascii')
@@ -559,18 +479,18 @@ def cornergrid(table):
 
     Parameters
     ----------
-    table : array
-        Table from `open_cornersfile` containing the of RA,dec coordinates
-        of the corners of cells in a given brick. It is assumed that the
-        cells are listed in numerical order.
+    table : ndarray
+        Table from `open_cornersfile` containing the RA,dec coordinates of
+        the corners of cells in a given brick. It is assumed that the rows
+        are sorted by cell name/number in numerical order.
 
     Returns
     -------
-    tuple
-        A tuple containing an array of the RA coordinates and an array of
-        the dec coordinates of the cell corners. The arrays both have shape
-        ``((NROW+1),(NCOL+1))``, and the values are arranged to represent
-        the corners of the brick grid.
+    ((NROW+1),(NCOL+1)) ndarray
+        RA coordinates of the cell corners in the brick grid, i.e., all
+        combinations of i and j integers.
+    ((NROW+1),(NCOL+1)) ndarray
+        dec coordinates of the cell corners.
 
     """
     table = table[SORT]
@@ -602,20 +522,16 @@ def cornergrid(table):
 # `_load_extpar_dict`, probably in creating the `Table` instances.
 
 def _load_extpar_dict():
-    """Load av and dav extinction parameter values for all cells.
+    """Load Av and dAv extinction parameter values for all cells.
 
-    Loop through all bricks, open their 'extpar' files, and save the av and
-    dav values for all cells as (av, dav) tuples in a dictionary keyed by
-    (brick, cell). Cells without SFH data have their cell number set to 0
-    and Av and dAv both set to 99.
-
-    Parameters
-    ----------
-    None
+    Loop through all bricks, open their 'extpar' files, and save the Av and
+    dAv values for all cells as (Av, dAv) tuples in a dictionary keyed by
+    (brick, cell). Cells without SFH data have their cell number, Av, and
+    dAv values set to 0, 99, and 99, respectively.
 
     Returns
     -------
-    dictionary
+    dict
 
     """
     pth = os.path.join(*_KIND_DICT['extpar'])
@@ -632,8 +548,8 @@ def _load_extpar_dict():
 EXTPAR_DICT = _load_extpar_dict()
 """Dictionary of the best-fit Av and dAv extinction parameters for every cell.
 
-The values are (av, dav) tuples and are keyed by (brick, cell). Both av and
-dav are equal to 99 if the cell does not actually have any SFH data.
+The values are (Av, dAv) tuples and are keyed by (brick, cell). Both Av and
+dAv are equal to 99 if the cell does not actually have any SFH data.
 
 """
 
@@ -641,44 +557,38 @@ dav are equal to 99 if the cell does not actually have any SFH data.
 # List of cells without data
 # --------------------------
 
-def _find_missing_cells(extpar_dict, missing=None, badval=99):
+def _find_missing_cells(extpar_dict, missing=None):
     """Find specific cells for which no data are available.
 
     If a cell did not have SFH data available when its brick's 'extpar'
-    file was written, the av and dav values were recorded as `badval`.
-    Cells without data can therefore be identified by searching
-    `extpar_dict` for av and dav values equal to `badval`. Any such cells
-    are added to a list as a (brick, cell) tuple.
+    file was written, the Av and dAv values were recorded as 99. Cells
+    without data can therefore be identified by searching `extpar_dict` for
+    Av and dAv values equal to 99. Any such cells are added to a list as a
+    (brick, cell) tuple.
 
     Parameters
     ----------
-    extpar_dict : dictionary
-        Dictionary of extinction parameters as (av, dav) tuples, keyed by
-        (brick, cell).
+    extpar_dict : dict
+        Extinction parameters as (Av, dAv) tuples keyed by (brick, cell).
     missing : list, optional
-        Existing list of missing cells. Missing items are appended
-        directly (i.e., the list is modified). If None (default), a new
+        Existing list of missing cells. Missing items are appended directly
+        (i.e., the original list is modified). If None (default), a new
         list is created.
-    badval : int or float, optional
-        Value of av or dav which signifies that a cell has no data. Default
-        is 99.
 
     Returns
     -------
     list
-        List of (brick, cell) tuples for where there is no have no data.
+        (brick, cell) tuples for where there is no SFH data.
 
     """
-    if missing is None:
-        missing = []
-
+    badval = 99
+    missing = [] if missing is None else missing
     missing += [brickcell for brickcell, avdav in extpar_dict.items()
                 if avdav == (badval, badval) and brickcell not in missing]
-
     return missing
 
 MISSING_CELLS = _find_missing_cells(EXTPAR_DICT)
-"""List of (brick, cell) tuples for where there is no data."""
+"""List of (brick, cell) tuples where there is no data."""
 
 
 # Wrap `_path`
@@ -722,7 +632,7 @@ def _inheritdocstr(func):
     """
     docstr1 = _path.__doc__
     lines1 = docstr1.split('\n')
-    lines2 = lines1[:7] + lines1[11:26] + lines1[30:]
+    lines2 = lines1[:26] + lines1[30:48] + lines1[52:]
     docstr2 = '\n'.join(lines2)
     func.__doc__ = docstr2
     return func
