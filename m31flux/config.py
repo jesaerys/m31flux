@@ -252,7 +252,7 @@ def _path(kind, extpar_dict, **kwargs):
         uniquely identifies the file or the group/category of files it
         belongs to. The exact set of files returned is controlled using
         keyword arguments. Valid kinds, listed below, are defined in
-        scripts/main.py in the main m31flux repository (optional suffixes
+        scripts/main in the main m31flux repository (optional suffixes
         are given in brackets).
 
         - 'corners'
