@@ -88,12 +88,12 @@ def main():
              r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
     plot_map(mod_fuv_red, plotname, label, limits, log10, cmap)
 
-    filename = os.path.join(REPO_DIR, 'maps', 'mod_fuv_int.fits')
-    mod_fuv_int = astropy.io.fits.getdata(filename)
-    plotname = os.path.join(REPO_DIR, 'figs', 'mod_fuv_int.pdf')
-    label = (r'intrinsic $f_\mathrm{FUV,mod} \, '
-             r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
-    plot_map(mod_fuv_int, plotname, label, limits, log10, cmap)
+    #filename = os.path.join(REPO_DIR, 'maps', 'mod_fuv_int.fits')
+    #mod_fuv_int = astropy.io.fits.getdata(filename)
+    #plotname = os.path.join(REPO_DIR, 'figs', 'mod_fuv_int.pdf')
+    #label = (r'intrinsic $f_\mathrm{FUV,mod} \, '
+    #         r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
+    #plot_map(mod_fuv_int, plotname, label, limits, log10, cmap)
 
     fuv_ratio = mod_fuv_red / galex_fuv
     plotname = os.path.join(REPO_DIR, 'figs', 'fuv_ratio.pdf')
@@ -124,12 +124,12 @@ def main():
              r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
     plot_map(mod_nuv_red, plotname, label, limits, log10, cmap)
 
-    filename = os.path.join(REPO_DIR, 'maps', 'mod_nuv_int.fits')
-    mod_nuv_int = astropy.io.fits.getdata(filename)
-    plotname = os.path.join(REPO_DIR, 'figs', 'mod_nuv_int.pdf')
-    label = (r'intrinsic $f_\mathrm{NUV,mod} \, '
-             r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
-    plot_map(mod_nuv_int, plotname, label, limits, log10, cmap)
+    #filename = os.path.join(REPO_DIR, 'maps', 'mod_nuv_int.fits')
+    #mod_nuv_int = astropy.io.fits.getdata(filename)
+    #plotname = os.path.join(REPO_DIR, 'figs', 'mod_nuv_int.pdf')
+    #label = (r'intrinsic $f_\mathrm{NUV,mod} \, '
+    #         r'\mathrm{(erg \,s^{-1} \,cm^{-2} \,\AA^{-1})}$')
+    #plot_map(mod_nuv_int, plotname, label, limits, log10, cmap)
 
     nuv_ratio = mod_nuv_red / galex_nuv
     plotname = os.path.join(REPO_DIR, 'figs', 'nuv_ratio.pdf')
