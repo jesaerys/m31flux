@@ -190,7 +190,7 @@ def calc_mean_sfr(brick, cell):
         # Get SFH over last 100 Myr
         i = sfh['log(age_f)'] <= 8.00
         sfr = sfh['SFR'][i]
-        agei, agef = 10**table['log(age_i)'][i], 10**table['log(age_f)'][i]
+        agei, agef = 10**sfh['log(age_i)'][i], 10**sfh['log(age_f)'][i]
 
         # Calculate mean SFR
         dt = agef - agei

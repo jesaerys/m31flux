@@ -220,6 +220,10 @@ _KIND_DICT = {
     'galex_nuv.hdr': 'mod_fuv_red.hdr',
     'galex_nuv.bg': (_ANALYSIS_DIR, '_galex_nuv', 'corrected',
                      'hdu0_PS_M31_MOS07-nd-int_density.fits'),
+    'sfr100': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_sfr100.fits'),
+    'sfr100.mosaic': (_ANALYSIS_DIR, 'sfr100.fits'),
+    'sfr100.montage': (_ANALYSIS_DIR, '_sfr100'),
+    'sfr100.hdr': 'mod_fuv_red.hdr',
     }
 """Paths to various file kinds.
 
@@ -267,6 +271,7 @@ def _path(kind, extpar_dict, **kwargs):
         - 'mod_nuv_int[.mosaic|.montage|.hdr]'
         - 'mod_nuv_red[.mosaic|.montage|.hdr]'
         - 'galex_nuv[.mosaic|.montage|.hdr|.bg]'
+        - 'sfr100[.mosaic|.montage|.hdr]'
         - 'weights'
 
     extpar_dict : dict

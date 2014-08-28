@@ -318,6 +318,14 @@ def synthetic_flux_maps(band):
     and NUV, respectively. These values were subtracted from the FUV and
     NUV mosaics.
 
+
+    Mean SFR
+    ========
+    The mean SFR over the past 100 Myr, <SFR>_100, was computed in each
+    grid cell from its SFH. As for the modeled flux maps, the derived SFRs
+    were used to create a map of <SFR>_100 for the PHAT survey area
+    ('sfr100').
+
     """
     import m31flux
     func_dict = {
@@ -327,6 +335,7 @@ def synthetic_flux_maps(band):
         'mod_nuv_red': m31flux.fluxmap.make_mod_nuv_red,
         'mod_nuv_int': m31flux.fluxmap.make_mod_nuv_int,
         'galex_nuv': m31flux.fluxmap.make_galex_nuv,
+        'sfr100': m31flux.fluxmap.make_sfr100,
         }
     func = func_dict[band]
     func()
@@ -420,7 +429,8 @@ def main():
         )
     choices = (
         'mod_fuv_int', 'mod_fuv_red', 'galex_fuv',
-        'mod_nuv_int', 'mod_nuv_red', 'galex_nuv'
+        'mod_nuv_int', 'mod_nuv_red', 'galex_nuv',
+        'sfr100',
         )
     parser2.add_argument('band', choices=choices, help=helpstr)
 
