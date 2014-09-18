@@ -40,10 +40,11 @@ def star_formation_histories():
     Alexia has divided all of the PHAT bricks (except 1 and 3 near the
     bulge) into 15x30 grids and measured the star formation history (SFH)
     in each grid cell (a.k.a., "pixel" or "region"). See `Brick grid
-    model`_ below. The cells are 23.87(6)x26.8(3) arcsec in size, or
-    436(1)x490(5) pc (the uncertainties come from slight variations between
-    cells) assuming a distance modulus of 24.47 (McConnachie et al. 2005)
-    and an inclination angle of 78 deg (Tully 1994). The SFHs were measured
+    model`_ below. The cells are 23.87(6)x26.8(6) arcsec in size, or
+    416(17) pc by 190(50) pc (the uncertainties come from slight variations
+    between cells) assuming a distance modulus of 24.47 (McConnachie et al.
+    2005) an inclination angle of 78 deg (Tully 1994), and a position angle
+    of 35 deg (RC3; de Vaucouleurs et al., 2995). The SFHs were measured
     from the PHAT F475W,F814W ".gst" photometry using MATCH with the
     following assumptions:
 
@@ -255,9 +256,9 @@ def synthetic_flux_maps(band):
     intermediate files placed in the ('<band>.montage' directory),
     resulting in the final modeled flux map covering the PHAT survey area.
     The output grid of the mosaic, defined by the mosaic template header
-    ('<band>.hdr' file), has a pixel scale of 23.75 arcsec, or 434 pc (see
-    `star_formation_histories`), and was automatically chosen by Montage as
-    the best fit to the collection of input brick maps.
+    ('<band>.hdr' file), has a pixel scale of 23.746 arcsec, or 440 pc by
+    101 pc (see `star_formation_histories`), and was automatically chosen
+    by Montage as the best fit to the collection of input brick maps.
 
     Modeled intrinsic and reddened flux maps ('*_int' and '*_red' files)
     were created for the following filters:
@@ -318,6 +319,14 @@ def synthetic_flux_maps(band):
     and NUV, respectively. These values were subtracted from the FUV and
     NUV mosaics.
 
+
+    Mean SFR
+    ========
+    The mean SFR over the past 100 Myr, <SFR>_100, was computed in each
+    grid cell from its SFH. As for the modeled flux maps, the derived SFRs
+    were used to create a map of <SFR>_100 for the PHAT survey area
+    ('sfr100').
+
     """
     import m31flux
     func_dict = {
@@ -327,6 +336,7 @@ def synthetic_flux_maps(band):
         'mod_nuv_red': m31flux.fluxmap.make_mod_nuv_red,
         'mod_nuv_int': m31flux.fluxmap.make_mod_nuv_int,
         'galex_nuv': m31flux.fluxmap.make_galex_nuv,
+        'sfr100': m31flux.fluxmap.make_sfr100,
         }
     func = func_dict[band]
     func()
@@ -420,7 +430,8 @@ def main():
         )
     choices = (
         'mod_fuv_int', 'mod_fuv_red', 'galex_fuv',
-        'mod_nuv_int', 'mod_nuv_red', 'galex_nuv'
+        'mod_nuv_int', 'mod_nuv_red', 'galex_nuv',
+        'sfr100',
         )
     parser2.add_argument('band', choices=choices, help=helpstr)
 

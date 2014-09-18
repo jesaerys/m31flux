@@ -144,11 +144,20 @@ McConnachie, A. W., Irwin, M. J., Ferguson, A. M. N., et al. 2005, MNRAS,
 
 """
 
-
-INC = astropy.coordinates.Angle(78.0, unit='deg')
+INC = astropy.coordinates.Angle(
+    np.degrees(np.arccos(np.sqrt((0.32**2 - 0.2**2) / (1 - 0.2**2)))) + 3,
+    unit='deg')
 """M31 disk inclination angle.
 
 Tully, R. B. 1994, yCat, 7145, 0.
+
+"""
+
+PA = astropy.coordinates.Angle(35.0, unit='deg')
+"""M31 disk position angle.
+
+de Vaucouleurs, G., de Vaucouleurs, A., Corwin, H. G., et al. 1995, VizieR
+Online Data Catalog, 7155, 0
 
 """
 
@@ -158,7 +167,7 @@ IMF = 'Kroupa'
 DUST_CURVE = 'cardelli'
 """Dust curve.
 
-Cardelli, J.~A., Clayton, G.~C., \& Mathis, J.~S.\ 1989, \apj, 345, 245.
+Cardelli, J. A., Clayton, G. C., & Mathis, J. S. 1989, ApJ, 345, 245.
 
 """
 
@@ -220,6 +229,10 @@ _KIND_DICT = {
     'galex_nuv.hdr': 'mod_fuv_red.hdr',
     'galex_nuv.bg': (_ANALYSIS_DIR, '_galex_nuv', 'corrected',
                      'hdu0_PS_M31_MOS07-nd-int_density.fits'),
+    'sfr100': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_sfr100.fits'),
+    'sfr100.mosaic': (_ANALYSIS_DIR, 'sfr100.fits'),
+    'sfr100.montage': (_ANALYSIS_DIR, '_sfr100'),
+    'sfr100.hdr': 'mod_fuv_red.hdr',
     }
 """Paths to various file kinds.
 
@@ -252,7 +265,7 @@ def _path(kind, extpar_dict, **kwargs):
         uniquely identifies the file or the group/category of files it
         belongs to. The exact set of files returned is controlled using
         keyword arguments. Valid kinds, listed below, are defined in
-        scripts/main.py in the main m31flux repository (optional suffixes
+        scripts/main in the main m31flux repository (optional suffixes
         are given in brackets).
 
         - 'corners'
@@ -267,6 +280,7 @@ def _path(kind, extpar_dict, **kwargs):
         - 'mod_nuv_int[.mosaic|.montage|.hdr]'
         - 'mod_nuv_red[.mosaic|.montage|.hdr]'
         - 'galex_nuv[.mosaic|.montage|.hdr|.bg]'
+        - 'sfr100[.mosaic|.montage|.hdr]'
         - 'weights'
 
     extpar_dict : dict

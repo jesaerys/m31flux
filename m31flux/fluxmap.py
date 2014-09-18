@@ -257,3 +257,31 @@ def make_galex_nuv():
                          postprocess=galex_post_nuv, preprocess=galex_pre_nuv)
     print('done')
     return
+
+
+
+# <SFR>_100
+# ---------
+
+def make_sfr100():
+    """100 Myr mean SFR."""
+    def func(brick, cell):
+        return util.calc_mean_sfr(brick, cell)
+
+    print(
+        '\n'
+        'm31flux.fluxmap.make_sfr100\n'
+        '--------------------------------'
+        )
+    make_brick_images('sfr100', func)
+
+    print('Mosaicking images', end='')
+    util.sys.stdout.flush()
+    input_files = config.path('sfr100')
+    mosaic_file = config.path('sfr100.mosaic')
+    work_dir = config.path('sfr100.montage')
+    header = config.path('sfr100.hdr')
+    astrogrid.mwe.mosaic(input_files, mosaic_file, work_dir, header=header)
+    print('  done')
+
+    return
