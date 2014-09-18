@@ -144,11 +144,20 @@ McConnachie, A. W., Irwin, M. J., Ferguson, A. M. N., et al. 2005, MNRAS,
 
 """
 
-
-INC = astropy.coordinates.Angle(78.0, unit='deg')
+INC = astropy.coordinates.Angle(
+    np.degrees(np.arccos(np.sqrt((0.32**2 - 0.2**2) / (1 - 0.2**2)))) + 3,
+    unit='deg')
 """M31 disk inclination angle.
 
 Tully, R. B. 1994, yCat, 7145, 0.
+
+"""
+
+PA = astropy.coordinates.Angle(35.0, unit='deg')
+"""M31 disk position angle.
+
+de Vaucouleurs, G., de Vaucouleurs, A., Corwin, H. G., et al. 1995, VizieR
+Online Data Catalog, 7155, 0
 
 """
 
@@ -158,7 +167,7 @@ IMF = 'Kroupa'
 DUST_CURVE = 'cardelli'
 """Dust curve.
 
-Cardelli, J.~A., Clayton, G.~C., \& Mathis, J.~S.\ 1989, \apj, 345, 245.
+Cardelli, J. A., Clayton, G. C., & Mathis, J. S. 1989, ApJ, 345, 245.
 
 """
 
