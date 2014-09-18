@@ -23,11 +23,11 @@ This repository contains the following:
   - `match-wrapper <http://github.com/jesaerys/match-wrapper>`_
   - `numpy <http://www.numpy.org>`_
 
-- scripts: python scripts, including main.py, which serves as the frontend
+- scripts: python scripts, including main, which serves as the frontend
   to `m31flux` and is the complete research and analysis record.
 
 - maps: modeled and observed flux maps in FITS format produced by
-  scripts/main.py.
+  scripts/main.
 
 - figs: figures based on the flux maps and their analyses.
 

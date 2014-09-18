@@ -6,7 +6,7 @@
 
 Data processing and analysis package for the M31 flux maps project.
 
-See scripts/main.py in the main m31flux repository for more complete
+See scripts/main in the main m31flux repository for more complete
 documentation.
 
 `m31flux` requires these packages:
