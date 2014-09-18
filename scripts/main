@@ -40,10 +40,11 @@ def star_formation_histories():
     Alexia has divided all of the PHAT bricks (except 1 and 3 near the
     bulge) into 15x30 grids and measured the star formation history (SFH)
     in each grid cell (a.k.a., "pixel" or "region"). See `Brick grid
-    model`_ below. The cells are 23.87(6)x26.8(3) arcsec in size, or
-    436(1)x490(5) pc (the uncertainties come from slight variations between
-    cells) assuming a distance modulus of 24.47 (McConnachie et al. 2005)
-    and an inclination angle of 78 deg (Tully 1994). The SFHs were measured
+    model`_ below. The cells are 23.87(6)x26.8(6) arcsec in size, or
+    416(17) pc by 190(50) pc (the uncertainties come from slight variations
+    between cells) assuming a distance modulus of 24.47 (McConnachie et al.
+    2005) an inclination angle of 78 deg (Tully 1994), and a position angle
+    of 35 deg (RC3; de Vaucouleurs et al., 2995). The SFHs were measured
     from the PHAT F475W,F814W ".gst" photometry using MATCH with the
     following assumptions:
 
@@ -255,9 +256,9 @@ def synthetic_flux_maps(band):
     intermediate files placed in the ('<band>.montage' directory),
     resulting in the final modeled flux map covering the PHAT survey area.
     The output grid of the mosaic, defined by the mosaic template header
-    ('<band>.hdr' file), has a pixel scale of 23.75 arcsec, or 434 pc (see
-    `star_formation_histories`), and was automatically chosen by Montage as
-    the best fit to the collection of input brick maps.
+    ('<band>.hdr' file), has a pixel scale of 23.746 arcsec, or 440 pc by
+    101 pc (see `star_formation_histories`), and was automatically chosen
+    by Montage as the best fit to the collection of input brick maps.
 
     Modeled intrinsic and reddened flux maps ('*_int' and '*_red' files)
     were created for the following filters:
