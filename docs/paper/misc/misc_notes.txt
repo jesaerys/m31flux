@@ -1,0 +1,384 @@
+Full-IMF assumption
+===================
+FSPS assumes a fully sampled, Kroupa (2002) IMF. All it knows about is the mass
+of a stellar population (e.g., at a given age in a SFH).
+
+If the number of stars in the CMD is sufficiently small, then there may be,
+
+- a higher proportion of high-mass stars making up the total mass than expected
+  for a fully populated IMF. There will therefore be more high-energy photons
+  than expected, and the modeled flux will be underestimated.
+- a higher proportion of low-mass stars making up the total mass than expected
+  for a fully populated IMF. There will therefore be fewer high-energy photons
+  than expected, and the modeled flux will be overestimated.
+
+These effects will worsen as the *total number of stars* in a region decreases.
+In other words, when the population is small, the same total mass could be
+produced by a variety of mass functions (IMF samplings), where each mass
+function has its own unique luminosity.
+
+* To demonstrate this hypothesis, one would actually have to do a meta-analysis
+  of the CMDs for all of the underestimated (overestimated) regions and show
+  that they all have more (fewer) high-mass stars than their corresponding
+  modeled CMDs (e.g., the best-fit CMDs from MATCH). More rigorously, one would
+  need to develop a metric for the abundance or paucity of of stars relative to
+  a full IMF, and then plot the flux ratio versus that metric.
+
+  - Can't just look at a handful and see if this is True or False; would have
+    to at least look for trends among some decent fraction of the ~10000
+    regions.
+
+For fixed *surface* brightness (proxy for stellar density), increasing the area
+will generally increase the number of stars and alleviate the IMF sampling
+issue, but low surface brightness areas will always be problematic because
+the number of stars can't increase if there simply aren't any.
+
+For fixed area, increasing the brightness will generally increase the number of
+stars and alleviate the IMF sampling issue, but small areas will always be
+problematic because relative brightness becomes increasingly dependent on the
+mass function.
+
+- The fact that there is scatter even in among the brightest regions indicates
+  that the regions are relatively small. If the regions were larger, then there
+  would be less scatter.
+
+  * To demonstrate this, one would have to group regions together to make
+    larger ones and then remeasure the variance of the flux ratios.
+
+
+
+
+
+Central questions
+=================
+1. Given an observed flux: how well can it be modeled?
+
+   - flux ratios follow a lognormal distribution with mu and sigma
+
+     - f_FUV,SFH/f_FUV,obs: mu = 7.62e-3, sigma = 2.37e-1
+     - f_NUV,SFH/f_FUV,obs: mu = -1.03e-1, sigma = 1.59e-1
+
+   * can say that (~68% of the time) modeled flux will be within 10**(mu-sigma)
+     and 10**(mu+sigma) of the observed flux.
+
+     - FUV: 0.590 < ratio < 1.756
+     - NUV: 0.547 < ratio < 1.137
+
+   * the modeling process is biased such that the expected flux ratio is
+     10**mu.
+
+     - FUV: 1.018
+     - NUV: 0.789
+
+   * This quantifies the confidence in our combined understanding of the IMF,
+     stellar models, and dust.
+
+2. Given an observed flux: how well can the SFR be determined?
+
+   - SFR ratios follow a lognormal distribution
+
+     - SFR_FUV/SFR_100: mu = -2.46e-1, sigma = 2.61e-1
+     - SFR_NUV/SFR_100: mu = 9.27e-2, sigma = 2.33e-1
+
+   * can say that (~68% of the time) flux-based SFR will be within
+     10**(mu-sigma) and 10**(mu+sigma) of the "true" SFR (the mean of the
+     CMD-based SFH).
+
+     - FUV: 0.311 < ratio < 1.035
+     - NUV: 0.724 < ratio < 2.117
+
+   * the flux calibration is biased such that the expected SFR ratio is 10**mu.
+
+     - FUV: 0.568
+     - NUV: 1.238
+
+   * This quantifies the confidence (robustness, applicability) in our flux
+     calibrations, at least for M31 and similar environments.
+
+     - Note: for M31, the conversion between flux and SFR is,
+
+       - sfr (Msun yr-1) = 5.047e9 * fFUV (erg s-1 cm-2 A-1)
+       - sfr (Msun yr-1) = 1.150e10 * fNUV (erg s-1 cm-2 A-1)
+
+     - Below <SFR>_100 ~ 1e-5 Msun yr-1, the log SFR ratios for all of the
+       flux-based measures become distinctly linear. The slopes and intercepts
+       are ~ -1 and between -5.4 and -6.2, respectively, indicating that the
+       flux-based SFRs become constants with values between 6e-7 and 4e-6.
+       Because the flux-based SFR is directly proportional to the flux, the
+       linear trend suggests that there is a constant baseline flux at very low
+       SFRs. In other words, the linear relationship between flux and SFR
+       assumed by the flux calibration breaks down below SFR ~ 1e-5 Msun yr-1.
+       We therefore limit our analysis of these figures to regions with
+       <SFR>_100 greater than this threshhold.
+
+   Also, compare global SFRs:
+
+   * Sum up the FUV-based SFR map (with the weights mask) -> global SFR_FUV
+
+     SFR_FUV: 0.223  # Msun yr-1
+     SFR_FUV0: 0.234
+
+     SFR_NUV: 0.434
+     SFR_NUV0: 0.341
+
+   * Sum up the <SFR>_100 image -> global <SFR>_100
+
+     SFR_100: 0.300  # Consistent with Lewis et al., 2014 (same data!)
+
+
+
+
+Discussion
+==========
+Address the same points as Simones et al. (2014):
+
+* Metallicity effects?
+* Assumed extinction curve?
+* SFH effects (constant vs not)?
+* etc.
+
+
+Comparing with Simones et al. (2014):
+
+* Simones et al. (2014a): fixed flux, variable size
+
+  - Modeled fluxes for larger regions have smaller error bars.
+  - Modeled fluxes for small regions have large error bars, even though the
+    regions are at least as bright as the large ones (IMF sampling issue)
+
+* Simones at al. (2014b): fixed size, variable flux
+
+  - Modeled fluxes for brighter regions have smaller error bars.
+  - Modeled fluxes for faint regions have large error bars, even though all
+    regions have the same size (IMF sampling issue).
+
+* The mosaic pixels are ~ the average UVR size; so there are UVRs that are
+  smaller and UVRs that are larger.
+
+
+
+
+*** note to evan: regarding spelling out "CD matrix", I have not found any
+evidence to support Micaela's hypothesis that "CD" stands for
+"coordinate-distortion". I have looked through the official documents
+specifying how world coordinates should be represented in the FITS standard,
+and "CD matrix" is given without explanation. Whatever the original meaning of
+"CD" was, I think it's lost forever.
+
+
+
+
+
+Future work
+===========
+- Further investigate the variance in the flux and SFR ratios. Is IMF
+  sampling really the main source? Would need to do an analysis of the CMDs
+  (e.g., how many stars on the MS?), or some kind of modeling exercise to
+  determine the when the total number of stars starts to matter for variations
+  in the combined luminosity.
+
+- Further investigate potential outliers. Are these just extreme cases of
+  whatever ultimately produces the dispersion in the points (not actually
+  outliers), or are their positions in the scatter plot determined by
+  fundamentally a different process (true outliers)?
+
+- Model 24um flux
+
+  - get SFR from monochromatic flux calibration
+  - get SFR from hybrid FUV+24um flux calibration <- this is most interesting
+
+- Bin the regions by surface brightness (effectively making flux contours).
+  As long as each bin constitues a sufficiently large total area, then it
+  should be possible to check if there is a characteristic minimum surface
+  brightness below which modeled fluxes and flux-based SFRs become unreliable
+  due to reasons other than IMF sampling and SFH issues.
+
+- With the dataset in general: if metallicities are believed, could do a
+  metallicity history (simiar to Lewis et al., 2014, but using metallicities
+  instead)
+
+
+
+TODO
+====
+
+- Make Figure 1
+- At some point: look at the phot files and determine the min, max, and average
+  number of stars in the CMDs.
+- At some point: determine the photometric completeness of the .gst data
+  (look in paper 1)
+- At some point: use an SSP model to figure out timescales specifically for FUV
+  an NUV; are they *both* around 100 Myr?
+
+
+
+
+
+Snippets
+========
+
+Load all data::
+
+  import astropy.io.fits as fits
+  import os
+  DEST1 = '/Users/jake/Desktop/data'
+  DEST2 = '/Users/jake/Desktop/dissertation_figs'
+  ffuv = fits.getdata(os.path.join(DEST1, 'galex_fuv.fits'))
+  fnuv = fits.getdata(os.path.join(DEST1, 'galex_nuv.fits'))
+  ffuv0 = fits.getdata(os.path.join(DEST1, 'mod_fuv_int.fits'))
+  ffuva = fits.getdata(os.path.join(DEST1, 'mod_fuv_red.fits'))
+  fnuv0 = fits.getdata(os.path.join(DEST1, 'mod_nuv_int.fits'))
+  fnuva = fits.getdata(os.path.join(DEST1, 'mod_nuv_red.fits'))
+  afuv = fits.getdata(os.path.join(DEST2, 'afuv.fits'))
+  anuv = fits.getdata(os.path.join(DEST2, 'anuv.fits'))
+  sfrfuv = fits.getdata(os.path.join(DEST2, 'sfrfuv.fits'))
+  sfrfuv0 = fits.getdata(os.path.join(DEST2, 'sfrfuv0.fits'))
+  sfrnuv = fits.getdata(os.path.join(DEST2, 'sfrnuv.fits'))
+  sfrnuv0 = fits.getdata(os.path.join(DEST2, 'sfrnuv0.fits'))
+  sfr100 = fits.getdata(os.path.join(DEST1, 'sfr100.fits'))
+  w = fits.getdata(os.path.join(DEST2, 'weights.fits'))
+
+Useful masks:
+
+  notnan = -np.isnan(ffuv0)  # All have same nans, except ffuv and fnuv
+
+  possfr = np.copy(notnan)
+  i = possfr[notnan]
+  i[sfr100[notnan] <= 0] = False
+  possfr[notnan] = i
+
+  I = notnan & possfr & w.astype(bool)  # 9860 good points
+
+Flux calibrations::
+
+  logCx_fuv = 43.35
+  logCx_nuv = 43.17
+  dist = 2.4174112853405514e+24  # cm
+  LAMBDA_EFF_FUV_A = 1538.6
+  LAMBDA_EFF_NUV_A = 2315.7
+  calfuv = 10**-logCx_fuv * 4 * np.pi * dist**2 * LAMBDA_EFF_FUV_A
+  calnuv = 10**-logCx_nuv * 4 * np.pi * dist**2 * LAMBDA_EFF_NUV_A
+
+Low-SFR slopes::
+
+  j = sfr100[I] < 1e-7
+  results = np.array([np.polyfit(np.log10(sfr100[I])[j],  np.log10(arr[I]/sfr100[I])[j], 1)
+                      for arr in [sfrfuv, sfrfuv0, sfrnuv, sfrnuv0]])
+  M, B = results.T
+
+scatter plots::
+
+  def testplot(x, y, **kw):
+      mfc = kw.pop('mfc', 'k')
+      ms = kw.pop('ms', 2)
+      alpha = kw.pop('alpha', 0.2)
+      ls = kw.pop('ls', 'none')
+      mec = kw.pop('mec', 'none')
+      marker = kw.pop('marker', 'o')
+      plt.plot(x, y, marker=marker, ls=ls, mec=mec, ms=ms, mfc=mfc, alpha=alpha, **kw)
+
+  i = sfr100[I] < 1e-5
+
+  plt.figure(1)
+  testplot(np.log10(sfr100[I])[-i], np.log10(sfrfuv0[I]/sfr100[I])[-i])
+  testplot(np.log10(sfr100[I])[i],  np.log10(sfrfuv0[I]/sfr100[I])[i], mfc='r')
+  plt.xlabel('log10(sfr100)')
+  plt.ylabel('log10(sfrfuv0 / sfr100)')
+  logx = np.array([-13., -6.])
+  logr = M[1]*logx + B[1]
+  plt.plot(logx, logr, 'b-')
+
+  plt.figure(2)
+  testplot(np.log10(sfr100[I])[-i], np.log10(sfrnuv0[I]/sfr100[I])[-i])
+  testplot(np.log10(sfr100[I])[i],  np.log10(sfrnuv0[I]/sfr100[I])[i], mfc='r')
+  plt.xlabel('log10(sfr100)')
+  plt.ylabel('log10(sfrnuv0 / sfr100)')
+  logx = np.array([-13., -6.])
+  logr = M[3]*logx + B[3]
+  plt.plot(logx, logr, 'b-')
+
+
+Observational uncertainties::
+
+  dtfuv = 7e3  # ~average exposure times (s) in the 5 DIS fields
+  dtnuv = 6e4
+
+  ufuv = 1.40e-15  # Unit responses; erg s-1 cm-2 A-1 per cps (i.e., flux * s)
+  unuv = 2.06e-16
+
+  # Some characteristic fluxes, and their uncertainties
+  f = np.array([1e-16, 1e-15, 1e-14])
+  sigmaffuv = np.sqrt(ufuv * f / dtfuv)
+  sigmafnuv = np.sqrt(unuv * f / dtnuv)
+
+  # 4.47e-18, 1.41e-17, 4.47e-17
+  # 5.86e-19, 1.85e-18, 5.86e-18
+
+  # Ratio uncertainties (assuming a ratio of 1)
+  sigmarfuv = sigmaffuv / f
+  sigmarnuv = sigmafnuv / f
+
+  # Uncertainty limits in a log-log plot
+  np.log10(1 + sigmarfuv)  # +/- (0.02, 0.01, 0.002) in ratio
+  np.log10(f + sigmaffuv) - np.log10(f)  # +/- (0.02, 0.01, 0.002) in flux
+
+  np.log10(1 + sigmarnuv)  # +/- (0.002, 0.001, 0.0002) in ratio
+  np.log10(f + sigmafnuv) - np.log10(f)  # +/- (0.002, 0.001, 0.0002) in flux
+
+
+All sfh files (assuming in ~/Research/PHAT/m31flux/analysis)::
+
+  import os
+  from match_wrapper.io import open_zcbfile
+  bricks = range(24)
+  bricks.pop(0); bricks.pop(0); bricks.pop(1)
+  bricks = ['b{:02d}'.format(brick) for brick in bricks]
+  zcb_files = []
+  for brick in bricks:
+      basedir = os.path.join(brick, 'bestzcb')
+      files = [os.path.join(basedir, file_) for file_ in os.listdir(basedir)]
+      zcb_files += files
+  mets = []
+  for zcb_file in zcb_files:
+      table = open_zcbfile(zcb_file)
+      i = table['log(age_f)'] <= 8
+      if np.any(table['SFR'][i]):
+          mets.append(np.mean(table['[M/H]'][i]))
+      else:
+          i = np.where(table['SFR'] > 0)[0][0]
+          mets.append(table['[M/H]'][i])
+  mets = np.array(mets)
+
+  # Mean metallicity: -0.055 +/- 0.086 (-0.142 < [M/H] < 0.0313); solar is 0.
+
+
+
+def galex_cps2flux(cps, band):
+    """GALEX counts per second to flux (erg s-1 cm-2 A-1)."""
+    scale = {'galex_fuv': 1.40e-15, 'galex_nuv': 2.06e-16}
+    return scale[band] * cps
+
+def galex_flux2cps(flux, band):
+    """GALEX flux (erg s-1 cm-2 A-1) to counts per second."""
+    scale = {'galex_fuv': 1.40e-15, 'galex_nuv': 2.06e-16}
+    return  flux / scale[band]
+
+def galex_cps2mag(cps, band):
+    """GALEX counts per second to AB magnitude."""
+    zeropoint = {'galex_fuv': 18.82, 'galex_nuv': 20.08}
+    return -2.5 * np.log10(cps) + zeropoint[band]
+
+def galex_mag2cps(mag, band):
+    """GALEX AB magnitude to counts per second."""
+    zeropoint = {'galex_fuv': 18.82, 'galex_nuv': 20.08}
+    return 10**(0.4 * (zeropoint[band] - mag))
+
+def galex_flux2mag(flux, band):
+    """GALEX flux (erg s-1 cm-2 A-1) to AB magnitude."""
+    return galex_cps2mag(galex_flux2cps(flux, band), band)
+
+def galex_mag2flux(mag, band):
+    """GALEX AB magnitude to flux (erg s-1 cm-2 A-1)."""
+    return galex_cps2flux(galex_mag2cps(mag, band), band)
+
+

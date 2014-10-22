@@ -1,0 +1,68 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{units}
+\usepackage{rotfloat}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{gensymb}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[margin=1in]{geometry}
+\usepackage{indentfirst}
+\setlength{\parskip}{\baselineskip}
+\graphicspath{{./figs/}}
+
+\usepackage{mydefs}
+\usepackage{natbib}
+
+\begin{document}
+
+\title{AST 5012: ISM \\ \vspace{2 mm}\Large Homework 4, Emission Line Profile}
+\author{Michael S. Gordon}
+\maketitle
+
+\section{}
+For the continuum emission, the source function is a blackbody at $T = 1000$~K:
+\begin{equation*}
+I_c = B_\nu\left(1-e^{-\tau_c}\right)
+\end{equation*}
+where $\tau_c = 10^{-3}\tau_0$.  For flux in the emission line, we similarly have a source function attenuated by optical depth:
+\begin{equation*}
+I_\ell = B_{\nu_0}\left(1-e^{-\tau_\ell}\right)
+\end{equation*}
+Here, $B_{\nu_0}$ is the Planck Function evaluated at line center ($\nu_0 = 1$~GHz) and $T = 1000$~K.  The optical depth in the line is a function of the total line optical depth $\tau_0$ and the normalized line profile $\phi(\nu)$:
+\begin{equation*}
+\tau_\ell = \tau_0\,\phi(\nu)
+\end{equation*}
+
+Since we consider a line profile broadened solely by Doppler motion, our line profile $\phi(\nu)$ is determined by the distribution of velocities:
+\begin{equation*}
+\phi(\nu) = \frac{1}{\Delta\nu_D\,\sqrt{\pi}}\:e^{-\left(\left(\nu-\nu_0\right)^2/\left(\Delta\nu_D\right)^2\right)}
+\end{equation*}
+with Doppler width $\Delta\nu_D$ defined as:\footnote{$\phi(\nu)$ expression from Kenneth Wood, \lq{}Widths of spectral lines,\rq{} available: \url{http://www-star.st-and.ac.uk/~kw25/teaching/nebulae/lecture08_linewidths.pdf}}
+\begin{equation*}
+\Delta\nu_D = \frac{\nu_0}{c}\:\sqrt{\frac{2kT}{m}}
+\end{equation*}
+
+Assuming a total optical line depth of $\tau_0 = 0.1$, and converting the 1\rq{} beam diameter into steradians, we plot the spectrum in Figure~\ref{fig:spec}. The emission peak is $\sim13\%$ above the continuum.
+\figspec
+\FloatBarrier
+
+\section{}
+We calculate equivalent width as :
+\begin{equation*}
+W = \sum{\frac{I_c-I_\ell}{I_c}\,d\,\nu}
+\end{equation*}
+For this feature, we calculate $\sim1$~kHz.  The box of equivalent area is illustrated in Figure~\ref{fig:ew}.
+\figEW
+\FloatBarrier
+
+\section{}
+As the optical depth in the continuum increases, the continuum emission approaches the Planck function.  If $\tau_0$, the optical depth of the emission line, increases as well, the emission line spectrum broadens and flattens while also rising towards the Planck function.  Eventually, the continuum rises into the emission feature, and the line can no longer be distinguished.  The equivalent width of the line falls to zero as $I_c-I_\ell\rightarrow 0$.  This trend is illustrated in Figure~\ref{fig:ewTau}.
+\figEWTau
+
+\end{document}

@@ -1,0 +1,42 @@
+\ProvidesPackage{mydefs}
+\RequirePackage{graphicx}
+\RequirePackage{units}
+\RequirePackage{rotfloat}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{gensymb}
+\RequirePackage{hyperref}
+\RequirePackage{booktabs}
+\RequirePackage{mathtools}
+\RequirePackage{amssymb}
+\RequirePackage{float}
+\RequirePackage{placeins}
+\graphicspath{{./figs/}}
+	
+% Define Figures
+\def \figspec {
+\begin{figure}[h!t]
+\centering
+\includegraphics[width=\textwidth]{lineprofile.png}
+\caption{Line profile as a function of frequency from line center, $\nu_0 = 1$~GHz.}
+\label{fig:spec}
+\end{figure}
+}
+
+\def \figEW {
+\begin{figure}[h!t]
+\centering
+\includegraphics[width=\textwidth]{ew.png}
+\caption{Equivalent width of the emission feature, EW = 1 kHz.}
+\label{fig:ew}
+\end{figure}
+}
+
+\def \figEWTau {
+\begin{figure}[h!t]
+\centering
+\includegraphics[width=\textwidth]{ew_tau.png}
+\caption{Equivalent width as a function of continuum optical depth $\tau_c$.}
+\label{fig:ewTau}
+\end{figure}
+}
