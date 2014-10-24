@@ -1,17 +1,16 @@
 m31flux
 =======
 
-Synthetic broadband flux maps of M31 from resolved optical photometry.
+Synthetic ultraviolet flux maps of M31 from resolved optical photometry.
 
 Jacob E. Simones, Julianne J. Dalcanton, Andrew E. Dolphin, Benjamin D.
 Johnson, Alexia R. Lewis, Evan D. Skillman, Daniel R. Weisz, Benjamin F.
 Williams
 
 Star formation histories derived from resolved optical photometry from PHAT
-were used to create maps of broadband flux in the ultraviolet and mid
-infrared. The maps cover roughly one third of the disk of M31 and have a
-resolution of ~430 pc. The maps were compared with observations from GALEX
-and Spitzer.
+were used to create maps of broadband flux in the ultraviolet. The maps cover
+roughly one third of the disk of M31 and have a resolution of ~440x100 pc. The
+maps were compared with observations from GALEX.
 
 This repository contains the following:
 
@@ -29,6 +28,7 @@ This repository contains the following:
 - maps: modeled and observed flux maps in FITS format produced by
   scripts/main.
 
-- figs: figures based on the flux maps and their analyses.
+- docs:
 
-- docs: sphinx documentation and paper drafts. Coming soon!
+  - sphinx documentation (Coming soon!)
+  - paper draft; intended for submission to arXiv, and eventually ApJ.
