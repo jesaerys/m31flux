@@ -1,6 +1,7 @@
 \documentclass[iop, tighten]{emulateapj}
 
 \include{macros}
+\include{float_macros}
 
 
 
@@ -118,20 +119,8 @@ star formation rate (\sfr{}) and metallicity evolution. The result is a set of
 spatially-resolved maps of synthetic broadband flux in M31 which can be
 compared with observations.
 
-
 % Figure 1
-\begin{figure*}
-\centering
-\includegraphics[scale=1.0]{m31flux-figures/map_full.pdf}
-\caption[PHAT survey map.]{Map of the PHAT survey area. The 21 PHAT bricks
-    analyzed in this study are outlined and numbered. Each brick was divided
-    into 450 regions on a $15 \times 30$ grid, as shown for brick 2 in the
-    inset panel. \citet{Lewis:2014} derived the \sfh{s} for all of the $\sim
-    24\aarcsec \times 27\aarcsec$ regions.
-}
-\label{fig:map}
-\end{figure*}
-
+\figmap
 
 The \citet{Lewis:2014} \sfh{s} can also be used to create temporally-averaged
 \sfr{} maps. Because the \sfh{s} were derived from the resolved stars without
@@ -160,9 +149,8 @@ observed fluxes using common flux-\sfr{} calibrations are described in \S
 the observations and compare mean \sfr{} maps with \sfr{s} estimated from
 observed flux. We conclude in \S \ref{conclusion}.
 
-
 % Table 1
-\input{m31flux-tables/table1}
+\tabfilters
 
 
 
@@ -247,32 +235,11 @@ SSP was weighted by its corresponding mass from the \sfh{}, and the individual
 SSP SEDs were finally summed to derive the integrated intrinsic (i.e.,
 unattenuated) model SED for the region.
 
-
 % Figure 2
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/modfluxmaps_fuv.pdf}
-\caption[\fuv{} flux map modeled from the \sfh{s}.]{\fuv{} flux modeled from
-    the \sfh{s}. The intrinsic flux, \ffuvsfhz{}, is shown in the left panel
-    and the middle panel shows the flux attenuated according to the extinction
-    model, \ffuvsfh{} (also shown alongside the observed GALEX \fuv{} flux in
-    Figure \ref{fig:fluxmaps_fuv}). The \fuv{} extinction, \afuv{}, derived
-    from \ffuvsfhz{} and \ffuvsfh{} is shown on the right.
-}
-\label{fig:modfluxmaps_fuv}
-\end{figure*}
-
+\figmodfluxmapsfuv
 
 % Figure 3
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/modfluxmaps_nuv.pdf}
-\caption[\nuv{} flux map modeled from the \sfh{s}.]{Same as Figure
-    \ref{fig:modfluxmaps_fuv}, but for the \nuv{} filter.
-}
-\label{fig:modfluxmaps_nuv}
-\end{figure*}
-
+\figmodfluxmapsnuv
 
 We derived an attenuated SED for the region using the same two-component
 extinction model used by MATCH to fit the CMD together with the region's
@@ -327,7 +294,7 @@ synthetic flux maps therefore have a resolution that is firmly in the sub-kpc
 regime.
 
 The final synthetic flux maps, \fxsfhz{} and \fxsfh{}, are shown in Figures
-\ref{fig:modfluxmaps_fuv} (\fuv{}) and \ref{fig:modfluxmaps_nuv}
+\ref{fig:modfluxmapsfuv} (\fuv{}) and \ref{fig:modfluxmapsnuv}
 (\nuv{}).\footnote{\label{github}The synthetic and the observed flux maps, as
 well as the $100\myr$ mean \sfr{} map, are available at
 \texttt{https://github.com/jesaerys/m31flux/tree/master/maps}.}
@@ -338,7 +305,7 @@ converted into AB magnitudes (Table \ref{tab:filters}), \xsfhz{} and \xsfh{}.
 The extinction maps were then calculated as the difference between the
 intrinsic and attenuated magnitudes, $\ax = \xsfh - \xsfhz$. We show the
 synthetic extinction maps with their corresponding synthetic flux maps in
-Figures \ref{fig:modfluxmaps_fuv} and \ref{fig:modfluxmaps_nuv}.
+Figures \ref{fig:modfluxmapsfuv} and \ref{fig:modfluxmapsnuv}.
 
 A pixel weight map representing the coverage of the available PHAT data was
 also produced during the mosaicking process. Mosaic pixels fully within the
@@ -372,31 +339,11 @@ observations are done on a full-pixel basis.
 
 \section{Observations}\label{observations}
 
-
 % Figure 4
-\begin{figure*}
-\centering
-\includegraphics[scale=0.9]{m31flux-figures/fluxmaps_fuv.pdf}
-\caption[Observed and synthetic attenuated \fuv{} flux maps.]{Observed \fuv{}
-    flux from GALEX, \ffuvobs{} (left), and synthetic attenuated \fuv{} flux
-    from the \sfh{s}, \ffuvsfh{} (right). The observed map has been clipped to
-    the PHAT survey border to match the synthetic map. The synthetic fluxes
-    show excellent morphological agreement with the observed fluxes.
-}
-\label{fig:fluxmaps_fuv}
-\end{figure*}
-
+\figfluxmapsfuv
 
 % Figure 5
-\begin{figure*}
-\centering
-\includegraphics[scale=0.9]{m31flux-figures/fluxmaps_nuv.pdf}
-\caption[Observed and synthetic attenuated \nuv{} flux maps.]{Same as Figure
-    \ref{fig:fluxmaps_fuv}, but for the \nuv{} filter.
-}
-\label{fig:fluxmaps_nuv}
-\end{figure*}
-
+\figfluxmapsnuv
 
 We constructed maps of observed GALEX \fuv{} and \nuv{} flux, \fxobs{}, to
 match the synthetic flux maps described in \S \ref{syntheticfluxmaps:fluxmod}.
@@ -427,8 +374,8 @@ of the brighter pixels. The adjusted background values were $5.22 \times
 10^{-16}$ and $2.0 \times 10^{-16}\uflambda$ per mosaic pixel) in \fuv{} and
 \nuv{}, respectively. We subtracted these values from the \fuv{} and \nuv{}
 mosaics to obtain the final observed UV flux maps for the PHAT survey area,
-\fxobs{}, shown in Figures \ref{fig:fluxmaps_fuv} (\fuv{}) and Figure
-\ref{fig:fluxmaps_nuv} (\nuv{}).
+\fxobs{}, shown in Figures \ref{fig:fluxmapsfuv} (\fuv{}) and Figure
+\ref{fig:fluxmapsnuv} (\nuv{}).
 
 %\textbf{*** TODO}
 %
@@ -450,42 +397,11 @@ mosaics to obtain the final observed UV flux maps for the PHAT survey area,
 
 \section{\sfr{} estimates}\label{sfrestimates}
 
-
 % Figure 6
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfrmaps1.pdf}
-\caption[\sfr{} maps from estimates based on observed fluxes compared with the
-mean \sfr{} map from the \sfh{s}.]{\fuv{} and \nuv{} flux-based \sfr{s},
-    \sfrfuv{} (middle) and \sfrnuv{} (right), compared with \sfroneh{} (left),
-    the mean \sfr{} over the last $100\myr$ of the \sfh{s}. The flux-based
-    \sfr{s} were derived from the observed GALEX fluxes, \fuvobs{} and
-    \nuvobs{} (Figures \ref{fig:fluxmaps_fuv} and \ref{fig:fluxmaps_nuv}),
-    corrected for extinction using \afuv{} and \anuv{} (Figures
-    \ref{fig:modfluxmaps_fuv} and \ref{fig:modfluxmaps_nuv}). The \sfr{} maps
-    show good overall agreement.
-}
-\label{fig:sfrmaps1}
-\end{figure*}
-
+\figsfrmapsone
 
 % Figure 7
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfrmaps2.pdf}
-\caption[\sfr{} maps from estimates based on synthetic intrinsic fluxes
-compared with the mean \sfr{} map from the \sfh{s}.]{Same as Figure
-    \ref{fig:sfrmaps1}, but instead comparing \sfroneh{} with \sfrfuvz{} and
-    \sfrnuvz{}, the \sfr{s} from the synthetic intrinsic (i.e., unattenuated)
-    fluxes from Figures \ref{fig:modfluxmaps_fuv} and
-    \ref{fig:modfluxmaps_nuv}. The synthetic intrinsic fluxes were derived
-    assuming a fully populated IMF so there is no inconsistency with the flux
-    calibration, which assumes the same. Like the \sfr{s} based on observed
-    flux, these \sfr{s} also show good agreement with \sfroneh{}.
-}
-\label{fig:sfrmaps2}
-\end{figure*}
-
+\figsfrmapstwo
 
 A common method for estimating the \sfr{} of a target is to measure the
 integrated flux in one or more filters and then calculate the \sfr{} using one
@@ -536,11 +452,11 @@ stars and the absorbed starlight processed and reradiated by dust
 \citep[e.g.,][]{Leroy:2012}. However, we have limited our study to observations
 by GALEX, so we will only consider the simpler monochromatic \fuv{} and \nuv{}
 calibrations in Equations \ref{eq:fuvcal} and \ref{eq:nuvcal}. We show
-the final \sfrx{} maps in Figure \ref{fig:sfrmaps1}.
+the final \sfrx{} maps in Figure \ref{fig:sfrmapsone}.
 
 We also created a map for the mean \sfr{} over the past $100\myr$ of the
 \sfh{s}, \sfroneh{}, which we show alongside the flux-based \sfr{} maps in
-Figure \ref{fig:sfrmaps1}. The $100\myr$ limit represents the nominal timescale
+Figure \ref{fig:sfrmapsone}. The $100\myr$ limit represents the nominal timescale
 of UV emission and matches the timescale used by \citet{Hao:2011} to derive the
 \fuv{} and \nuv{} flux calibrations.
 
@@ -549,7 +465,7 @@ before, except instead we started with the intrinsic synthetic fluxes \fxsfhz{}
 described in \S \ref{syntheticfluxmaps:fluxmod}. Because the fluxes were
 intrinsic, it was not necessary to apply an extinction correction before
 converting the fluxes into \sfr{s}. The maps for the intrinsic flux-based
-\sfr{} estimates, \sfrxz{}, are shown in Figure \ref{fig:sfrmaps2}.
+\sfr{} estimates, \sfrxz{}, are shown in Figure \ref{fig:sfrmapstwo}.
 
 
 
@@ -560,7 +476,7 @@ converting the fluxes into \sfr{s}. The maps for the intrinsic flux-based
 
 \subsection{Modeled flux}\label{discussion:modflux}
 
-Figures \ref{fig:fluxmaps_fuv} and \ref{fig:fluxmaps_nuv} show remarkable
+Figures \ref{fig:fluxmapsfuv} and \ref{fig:fluxmapsnuv} show remarkable
 overall qualitative agreement between the synthetic attenuated fluxes \fxsfh{}
 and the observed GALEX fluxes \fxobs{}. In particular, all of the main features
 brighter than $\sim 10^{-15}\uflambda$ in the observed maps are faithfully
@@ -583,46 +499,11 @@ confidence limits of 0.59 and 1.76 (\fuv{}) and 0.55 and 1.14 (\nuv{}). Note
 that in both filters, the median ratio is within the confidence interval of 1,
 indicating that \fxsfh{} is consistent with \fxobs{} on average.
 
-
 % Figure 8
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/flux_fuv_sfh-vs-obs.pdf}
-\caption[Ratio of the synthetic flux to the observed flux in the \fuv{}
-filter.]{Ratio of the synthetic attenuated flux, \ffuvsfh{}, to the GALEX
-    observed flux, \ffuvobs{}, in the \fuv{} filter. The log flux ratios in the
-    scatter plot follow a normal distribution with $\mu = 7.62\times 10^{-3}$
-    (horizontal dashed line) and $\sigma = 2.37\times 10^{-1}$. The median
-    ratio is 1.02 with 68\% confidence limits of 0.59 and 1.76. \ffuvsfh{} and
-    \ffuvobs{} are therefore consistent on average. The flux ratio variance
-    increases with decreasing observed flux, suggesting that the uncertainties
-    are dominated by incomplete IMF sampling. The large red circles represent
-    flux ratios for the UV-bright regions from \citet{Simones:2014} and are
-    consistent with the main sample. The map shows a fairly even spatial
-    distribution for the flux ratios, with the most severely overestimated and
-    underestimated pixels occurring primarily in the faint, off-arm areas of
-    the galaxy, as shown in the scatter plot.
-}
-\label{fig:fuvfluxratio}
-\end{figure*}
-
+\figfuvfluxratio
 
 % Figure 9
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/flux_nuv_sfh-vs-obs.pdf}
-\caption[Ratio of the synthetic flux to the observed flux in the \nuv{}
-filter.]{Same as Figure \ref{fig:fuvfluxratio}, but for the \nuv{} filter.
-    In this case, the log-normal distribution is characterized by $\mu =
-    -1.03\times 10^{-1}$ and $\sigma = 1.59\times 10^{-1}$. The median ratio is
-    0.79 with 68\% confidence limits of 0.55 and 1.14. \fnuvsfh{} and
-    \fnuvobs{} are therefore consistent on average. The role of IMF sampling is
-    not as important for \fnuvobs{}, so the uncertainties in \fnuvsfh{} are
-    somewhat smaller.
-}
-\label{fig:nuvfluxratio}
-\end{figure*}
-
+\fignuvfluxratio
 
 The overall agreement between \fxsfh{} and \fxobs{} shows that our modeling
 procedure is generally robust and justifies the several key assumptions that we
@@ -709,61 +590,24 @@ for the synthetic \fuv{} fluxes of the UV-bright regions.
 
 \subsection{\sfr{} estimates from FUV flux}
 
-
 % Figure 10
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfr_fuv-vs-mean.pdf}
-\caption[Ratio of the \sfr{} based on the observed extinction-corrected \fuv{}
-flux to the $100\myr$ mean \sfr{}.]{Ratio of the \sfr{} based on the observed
-    extinction-corrected \fuv{} flux, \sfrfuv{}, to the $100\myr$ mean of the
-    \sfh{}, \sfroneh{}. The log \sfr{} ratios show a linear tail feature with
-    $-1$ slope and $-6.0$ intercept, implying that \sfrfuv{} becomes constant
-    for $\sfroneh < 9.8\times 10^{-7}\msun\yr^{-1}$. We constrain our analysis
-    to pixels with $\sfroneh10^{-5}\msun\yr^{-1}$ (vertical dashed line). Above
-    this limit, the log \sfr{} ratios follow a normal distribution with $\mu =
-    -2.46\times 10^{-1}$ (horizontal dashed line) and $\sigma = 2.61\times
-    10^{-1}$. The median ratio is 0.57 with 68\% confidence limits of 0.31 and
-    1.04, most likely due to incomplete IMF sampling. \sfrfuv{} and \sfroneh{}
-    are therefore consistent on average. The large red circles represent \sfr{}
-    ratios for the UV-bright regions from \citet{Simones:2014} and are
-    consistent with the main sample. Apart from the faint, off-arm areas
-    responsible for the tail feature, the map shows a fairly even spatial
-    distribution for the \sfr{} ratios.
-}
-\label{fig:fuvsfrratio}
-\end{figure*}
-
+\figfuvsfrratio
 
 % Figure 11
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfr_nuv-vs-mean.pdf}
-\caption[Ratio of the \sfr{} based on the observed extinction-corrected \nuv{}
-flux to the $100\myr$ mean \sfr{}.]{Same as Figure \ref{fig:fuvsfrratio}, but
-    for the \nuv{} filter. In this case, the linear tail has an intercept of
-    $-5.4$ such that \sfrnuv{} becomes constant for $\sfroneh < 4.1\times
-    10^{-6}\msun\yr^{-1}$. The log-normal distribution is characterized by $\mu
-    = 9.27\times 10^{-2}$ and $\sigma = 2.33\times 10^{-1}$. The median ratio
-    is 1.24 with 68\% confidence limits of 0.72 and 2.12. \sfrnuv{} and
-    \sfroneh{} are therefore consistent on average.
-}
-\label{fig:nuvsfrratio}
-\end{figure*}
-
+\fignuvsfrratio
 
 As with the synthetic and observed fluxes, the flux-based \sfr{} maps in
-Figures \ref{fig:sfrmaps1} and \ref{fig:sfrmaps2} show good overall
+Figures \ref{fig:sfrmapsone} and \ref{fig:sfrmapstwo} show good overall
 morphological agreement with the \sfroneh{} map. We compare the \sfr{s} more
 closely in Figures \ref{fig:fuvsfrratio} and \ref{fig:nuvsfrratio}, in which we
 map the ratio of \sfrx{} to \sfroneh{} and plot the \sfr{} ratio as a function
 of \sfroneh{}. A major feature in both figures is the marked contrast in the
 \sfr{} ratios between the high and low \sfr{} areas. The areas with low
-\sfroneh{}, corresponding to the faint areas in Figures \ref{fig:fluxmaps_fuv}
-and \ref{fig:fluxmaps_nuv}, host nearly all of the very highest \sfr{} ratios
-in the entire survey area and none of the low or moderate ratios. The pixels in
+\sfroneh{}, corresponding to the faint areas in Figures \ref{fig:fluxmapsfuv}
+and \ref{fig:fluxmapsnuv}, host nearly all of the very highest \sfr{} ratios in
+the entire survey area and none of the low or moderate ratios. The pixels in
 these areas make up the downward sloping tails seen at low \sfroneh{} in the
-scatter plots in Figures \ref{fig:sfrmaps1} and \ref{fig:sfrmaps2}.
+scatter plots in Figures \ref{fig:sfrmapsone} and \ref{fig:sfrmapstwo}.
 
 The low-\sfr{} tails are distinctly linear, with slopes of $-1$ and intercepts
 of $-6.0$ and $-5.4$ for the \fuv{} and \nuv{} \sfr{} ratios, respectively. In
@@ -781,11 +625,11 @@ below \sfroneh{} approximately one to a $\mathrm{few} \times
 Using the flux calibrations in reverse, we find that the above \sfr{} constants
 translate into $\ffuvobs \sim 2\times 10^{-16}\uflambda$ and $\fnuvobs \sim
 8\times 10^{-16}\uflambda$ (or $-15.7$ and $-15.1$ in log flux, respectively).
-All of Figures  \ref{fig:sfrmaps1}, \ref{fig:sfrmaps2}, \ref{fig:fuvfluxratio},
-and \ref{fig:nuvfluxratio} show that these flux and \sfr{} limits make the
-\fuv{} and \nuv{} flux-to-\sfr{} calibrations completely unreliable for
-approximately half of the pixels in the survey area. This demonstrates the
-importance of warnings in the literature
+All of Figures  \ref{fig:sfrmapsone}, \ref{fig:sfrmapstwo},
+\ref{fig:fuvfluxratio}, and \ref{fig:nuvfluxratio} show that these flux and
+\sfr{} limits make the \fuv{} and \nuv{} flux-to-\sfr{} calibrations completely
+unreliable for approximately half of the pixels in the survey area. This
+demonstrates the importance of warnings in the literature
 \citep[e.g.,][]{Murphy:2011,Kennicutt:2012,Leroy:2012} that flux calibrations
 are problematic on sub-kpc scales. We therefore limit our analysis of the
 \sfr{} ratios in Figures \ref{fig:fuvsfrratio} and \ref{fig:nuvsfrratio} to
@@ -833,42 +677,11 @@ effect of \sfh{} variability, we recreate in Figures \ref{fig:fuvzsfrratio} and
 \ref{fig:nuvsfrratio} using \sfrxz{}, the \sfr{s} derived from the synthetic
 intrinsic fluxes (see \S \ref{syntheticfluxmaps:fluxmod}) instead of \sfrx{}.
 
-
 % Figure 12
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfr_fuv0-vs-mean.pdf}
-\caption[Ratio of the \sfr{} based on the synthetic intrinsic \fuv{} flux to
-the $100\myr$ mean \sfr{}.]{Same as Figure \ref{fig:fuvsfrratio}, but based on
-    synthetic instrinsic flux, \sfrfuvz{}. The log-normal distribution is
-    characterized by $\mu = -1.98\times 10^{-1}$ and $\sigma = 2.39\times
-    10^{-1}$. The median ratio is 0.63 with 68\% confidence limits of 0.37 and
-    1.10. \sfrfuvz{} and \sfroneh{} are therefore consistent on average. The
-    results here are similar to Figure \ref{fig:fuvsfrratio}, suggesting that
-    \sfh{} variability does not significantly affect the \sfrfuv{}
-    uncertainties.
-}
-\label{fig:fuvzsfrratio}
-\end{figure*}
-
+\figfuvzsfrratio
 
 % Figure 13
-\begin{figure*}
-\centering
-\includegraphics[width=\textwidth]{m31flux-figures/sfr_nuv0-vs-mean.pdf}
-\caption[Ratio of the \sfr{} based on the synthetic intrinsic \nuv{} flux to
-the $100\myr$ mean \sfr{}.]{Same as Figure \ref{fig:nuvsfrratio}, but based on
-    synthetic instrinsic flux, \sfrnuvz{}. The log-normal distribution is
-    characterized by $\mu = 9.43\times 10^{-3}$ and $\sigma = 2.08\times
-    10^{-1}$. The median ratio is 1.02 with 68\% confidence limits of 0.63 and
-    1.65. \sfrnuvz{} and \sfroneh{} are therefore consistent on average. The
-    results here are similar to Figure \ref{fig:nuvsfrratio}, suggesting that
-    \sfh{} variability does not significantly affect the \sfrnuv{}
-    uncertainties.
-}
-\label{fig:nuvzsfrratio}
-\end{figure*}
-
+\fignuvzsfrratio
 
 \sfrxz{} is a useful quantity because it is determined self-consistently.
 Converting a \sfr{} (e.g., for an age bin in a \sfh{}) into a flux as
@@ -908,7 +721,7 @@ the $+\!2.15/\!-\!0.88$ uncertainty found by \citet{Simones:2014}.
 Finally, we evaluate the flux calibrations in Equations \ref{eq:fuvcal} and
 \ref{eq:nuvcal} for $\sim$galaxy-sized scales, as they are perhaps more
 commonly be used, by measuring the global \sfr{} for the entire PHAT survey
-area. Summing up all of the pixels in Figure \ref{fig:sfrmaps1}, we find that
+area. Summing up all of the pixels in Figure \ref{fig:sfrmapsone}, we find that
 $\sfroneh=0.30\msun\yr^{-1}$, consistent with \citet{Lewis:2014}. In
 comparison, the global flux-based \sfr{s} are $0.22\msun\yr^{-1}$ for \fuv{}
 and $0.43\msun\yr^{-1}$ for \nuv{}. If we adopt the estimated uncertainties
