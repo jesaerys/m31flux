@@ -414,8 +414,16 @@ A small amount of background UV flux was present in the \fuv{} and \nuv{}
 mosaics, primarily due to scattering of UV photons from hot foreground stars in
 the Galaxy. We measured the mean background flux in a rectangular aperture in
 an off-galaxy area relatively devoid of stars in the reprojected, background
-matched tile \texttt{PS\_M31\_MOS07}. The measured background values were $5.22
-\times 10^{-19}$ and $3.47 \times 10^{-19}\uflambda\aarcsec^{-2}$ ($2.9 \times
+matched tile \texttt{PS\_M31\_MOS07}. The resulting \fuv{} and \nuv{}
+background levels were slightly underestimated and overestimated, respectively,
+causing a significant downturn/upturn in the distribution of $\fxsfh/\fxobs$
+ratios (Figures \ref{fig:fuvfluxratio} and \ref{fig:nuvfluxratio}; see \S
+\ref{discussion:modflux}) for pixels with \fxobs{} comparable to the
+background. To correct for this, we adjusted the background levels such that
+the median $\logten(\fxsfh/\fxobs)$ value for all pixels with $\fxobs <
+10^{-15.5}\uflambda$ (the approximate median of \fxobs{}) matched that for all
+of the brighter pixels. The adjusted background values were $5.22 \times
+10^{-19}$ and $3.47 \times 10^{-19}\uflambda\aarcsec^{-2}$ ($2.9 \times
 10^{-16}$ and $2.0 \times 10^{-16}\uflambda$ per mosaic pixel) in \fuv{} and
 \nuv{}, respectively. We subtracted these values from the \fuv{} and \nuv{}
 mosaics to obtain the final observed UV flux maps for the PHAT survey area,
