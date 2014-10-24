@@ -9,8 +9,6 @@
 \newcommand{\cm}{\ensuremath{\,\mathrm{cm}}}
 \newcommand{\pc}{\ensuremath{\,\mathrm{pc}}}
 \newcommand{\kpc}{\ensuremath{\,\mathrm{kpc}}}
-\newcommand{\mpc}{\ensuremath{\,\mathrm{Mpc}}}
-\newcommand{\mmag}{\ensuremath{\,\mathrm{mag}}}
 \newcommand{\dex}{\ensuremath{\,\mathrm{dex}}}
 \newcommand{\ang}{\ensuremath{\,\textrm{\AA}}}
 \newcommand{\ddeg}{\ensuremath{\,\mathrm{deg}}}
@@ -38,60 +36,48 @@
 \newcommand{\ax}{\ensuremath{A_\filter}}
 \newcommand{\afuv}{\ensuremath{A_\fuv}}
 \newcommand{\anuv}{\ensuremath{A_\nuv}}
-\newcommand{\ebv}{\ensuremath{E(\mathrm{B - V})}}
 \newcommand{\rv}{\ensuremath{R_\mathrm{V}}}
 
 
 % Words
 \newcommand{\obs}{\ensuremath{\mathrm{obs}}}
-\newcommand{\ssp}{\ensuremath{\mathrm{SSP}}}
-\newcommand{\peak}{\ensuremath{\mathrm{peak}}}
 
 
 % Specific quantities
 \newcommand{\xobs}{\ensuremath{m_{\filter,\obs}}}  % Observed mag
-\newcommand{\fuvobs}{\ensuremath{\fuv_\obs}}
-\newcommand{\nuvobs}{\ensuremath{\nuv_\obs}}
-\newcommand{\xsfh}{\ensuremath{m_{\filter,\sfh}}}  % Modeled attenuated mag
-\newcommand{\fuvsfh}{\ensuremath{\fuv_\sfh}}
-\newcommand{\nuvsfh}{\ensuremath{\nuv_\sfh}}
-\newcommand{\xsfhz}{\ensuremath{m_{\filter,\sfh,0}}}  % Modeled intrinsic mag
-\newcommand{\fuvsfhz}{\ensuremath{\fuv_{\sfh,0}}}
-\newcommand{\nuvsfhz}{\ensuremath{\nuv_{\sfh,0}}}
-\newcommand{\fuvnuvobs}{\ensuremath{(\fuv-\nuv)_\obs}}
-\newcommand{\fuvnuvsfh}{\ensuremath{(\fuv-\nuv)_\sfh}}
-\newcommand{\fuvnuvsfhz}{\ensuremath{(\fuv-\nuv)_{\sfh,0}}}
+\newcommand{\fuvobs}{\ensuremath{m_\fuv^\obs}}
+\newcommand{\nuvobs}{\ensuremath{m_\nuv^\obs}}
+\newcommand{\xsfh}{\ensuremath{m_\filter^\sfh}}  % Modeled attenuated mag
+\newcommand{\fuvsfh}{\ensuremath{m_\fuv^\sfh}}
+\newcommand{\nuvsfh}{\ensuremath{m_\nuv^\sfh}}
+\newcommand{\xsfhz}{\ensuremath{m_\filter^{\sfh,0}}}  % Modeled intrinsic mag
+\newcommand{\fuvsfhz}{\ensuremath{m_\fuv^{\sfh,0}}}
+\newcommand{\nuvsfhz}{\ensuremath{m_\nuv^{\sfh,0}}}
+\newcommand{\fuvnuvobs}{\ensuremath{(m_\fuv-m_\nuv)^\obs}}
+\newcommand{\fuvnuvsfh}{\ensuremath{(m_\fuv-m_\nuv)^\sfh}}
+\newcommand{\fuvnuvsfhz}{\ensuremath{(m_\fuv-m_\nuv)^{\sfh,0}}}
 
-\newcommand{\fxobs}{\ensuremath{f_{\filter,\obs}}}  % Observed flux
-\newcommand{\ffuvobs}{\ensuremath{f_{\fuv,\obs}}}
-\newcommand{\fnuvobs}{\ensuremath{f_{\nuv,\obs}}}
-\newcommand{\fxsfh}{\ensuremath{f_{\filter,\sfh}}}  % Modeled attenuated flux
-\newcommand{\ffuvsfh}{\ensuremath{f_{\fuv,\sfh}}}
-\newcommand{\fnuvsfh}{\ensuremath{f_{\nuv,\sfh}}}
-\newcommand{\fxsfhz}{\ensuremath{f_{\filter,\sfh,0}}}  % Modeled intrinsic flux
-\newcommand{\ffuvsfhz}{\ensuremath{f_{\fuv,\sfh,0}}}
-\newcommand{\fnuvsfhz}{\ensuremath{f_{\nuv,\sfh,0}}}
+\newcommand{\fxobs}{\ensuremath{f_\filter^\obs}}  % Observed flux
+\newcommand{\ffuvobs}{\ensuremath{f_\fuv^\obs}}
+\newcommand{\fnuvobs}{\ensuremath{f_\nuv^\obs}}
+\newcommand{\fxsfh}{\ensuremath{f_\filter^\sfh}}  % Modeled attenuated flux
+\newcommand{\ffuvsfh}{\ensuremath{f_\fuv^\sfh}}
+\newcommand{\fnuvsfh}{\ensuremath{f_\nuv^\sfh}}
+\newcommand{\fxsfhz}{\ensuremath{f_\filter^{\sfh,0}}}  % Modeled intrinsic flux
+\newcommand{\ffuvsfhz}{\ensuremath{f_\fuv^{\sfh,0}}}
+\newcommand{\fnuvsfhz}{\ensuremath{f_\nuv^{\sfh,0}}}
 
 \newcommand{\sfrx}{\ensuremath{\sfr_\filter}}  % Observed flux-based SFR
 \newcommand{\sfrfuv}{\ensuremath{\sfr_\fuv}}
 \newcommand{\sfrnuv}{\ensuremath{\sfr_\nuv}}
-\newcommand{\sfrxz}{\ensuremath{\sfr_{\filter,0}}}  % Modeled flux-based SFR
-\newcommand{\sfrfuvz}{\ensuremath{\sfr_{\fuv,0}}}
-\newcommand{\sfrnuvz}{\ensuremath{\sfr_{\nuv,0}}}
+\newcommand{\sfrxz}{\ensuremath{\sfr_\filter^0}}  % Modeled flux-based SFR
+\newcommand{\sfrfuvz}{\ensuremath{\sfr_\fuv^0}}
+\newcommand{\sfrnuvz}{\ensuremath{\sfr_\nuv^0}}
 \newcommand{\sfroneh}{\ensuremath{\meansfr_{100}}}  % 100-Myr mean SFR from SFH
-\newcommand{\sfrfiveh}{\ensuremath{\meansfr_{500}}}  % 500-Myr mean
 
 \newcommand{\lx}{\ensuremath{L_\filter}}  % Luminosity
 \newcommand{\lfuv}{\ensuremath{L_\fuv}}
 \newcommand{\lnuv}{\ensuremath{L_\nuv}}
-
-\newcommand{\age}{\ensuremath{\mathrm{Age}}}
-\newcommand{\agessp}{\ensuremath{\age_\ssp}}
-\newcommand{\agepeak}{\ensuremath{\age_\peak}}
-
-\newcommand{\massoneh}{\ensuremath{M_{100}}}
-\newcommand{\massssp}{\ensuremath{M_\ssp}}
-\newcommand{\masspeak}{\ensuremath{M_\peak}}
 
 
 % Other
