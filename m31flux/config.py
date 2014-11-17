@@ -176,10 +176,10 @@ Cardelli, J. A., Clayton, G. C., & Mathis, J. S. 1989, ApJ, 345, 245.
 # Paths
 # =====
 
-_PROJECT_DIR = '/Users/Jake/Research/PHAT/m31flux'
+_PROJECT_DIR = '/Users/jake/research/phat/m31flux'
 _SFH_DIR = os.path.join(_PROJECT_DIR, 'sfh')
 _ANALYSIS_DIR = os.path.join(_PROJECT_DIR, 'analysis')
-_GALEX_DIR = '/Users/Jake/Research/Storage/M31/GALEX/DIS'
+_GALEX_DIR = '/Volumes/HD2/data/m31/galex/dis'
 
 
 _KIND_DICT = {
@@ -207,10 +207,10 @@ _KIND_DICT = {
     'weights': (_ANALYSIS_DIR, 'weights.fits'),
 
     'galex_fuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-fd-int.fits'),
-    'galex_fuv.mosaic': (_ANALYSIS_DIR, 'galex_fuv.fits'),
-    'galex_fuv.montage': (_ANALYSIS_DIR, '_galex_fuv'),
+    'galex_fuv.mosaic': (_ANALYSIS_DIR, 'galex_fuv0.fits'),
+    'galex_fuv.montage': (_ANALYSIS_DIR, '_galex_fuv0'),
     'galex_fuv.hdr': 'mod_fuv_red.hdr',
-    'galex_fuv.bg': (_ANALYSIS_DIR, '_galex_fuv', 'corrected',
+    'galex_fuv.bg': (_ANALYSIS_DIR, '_galex_fuv0', 'corrected',
                      'hdu0_PS_M31_MOS07-fd-int_density.fits'),
 
     'mod_nuv_int': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_mod_nuv_int.fits'),
@@ -224,11 +224,12 @@ _KIND_DICT = {
     'mod_nuv_red.hdr': 'mod_fuv_red.hdr',
 
     'galex_nuv': (_GALEX_DIR, 'PS_M31_MOS{0:02d}-nd-int.fits'),
-    'galex_nuv.mosaic': (_ANALYSIS_DIR, 'galex_nuv.fits'),
-    'galex_nuv.montage': (_ANALYSIS_DIR, '_galex_nuv'),
+    'galex_nuv.mosaic': (_ANALYSIS_DIR, 'galex_nuv0.fits'),
+    'galex_nuv.montage': (_ANALYSIS_DIR, '_galex_nuv0'),
     'galex_nuv.hdr': 'mod_fuv_red.hdr',
-    'galex_nuv.bg': (_ANALYSIS_DIR, '_galex_nuv', 'corrected',
+    'galex_nuv.bg': (_ANALYSIS_DIR, '_galex_nuv0', 'corrected',
                      'hdu0_PS_M31_MOS07-nd-int_density.fits'),
+
     'sfr100': (_ANALYSIS_DIR, 'b{0:02d}', 'b{0:02d}_sfr100.fits'),
     'sfr100.mosaic': (_ANALYSIS_DIR, 'sfr100.fits'),
     'sfr100.montage': (_ANALYSIS_DIR, '_sfr100'),
