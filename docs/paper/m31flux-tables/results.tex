@@ -1,0 +1,33 @@
+\newlength{\dy}
+\setlength{\dy}{2pt}
+
+\begin{deluxetable*}{ccccccc}
+\tabletypesize{\footnotesize}
+\tablecaption{Results.\label{tab:iii}}
+\tablewidth{0pt}
+\tablehead{
+    \colhead{Figure} &
+    \colhead{Quantity} &
+    \colhead{$\mu$\tablenotemark{a}}  &
+    \colhead{$\sigma$\tablenotemark{a}} &
+    \colhead{Median\tablenotemark{b}}  &
+    \colhead{68\% C.L.\tablenotemark{c}} &
+    \colhead{Unc.\tablenotemark{d}}
+}
+\startdata
+\ref{fig:viii} &  $\ffuvsfh/\ffuvobs$ &   $7.62\times 10^{-3}$ &  $2.37\times 10^{-1}$ &  1.02 &  0.59, 1.76 &  $-0.43$, $+0.74$ \\[\dy]
+\ref{fig:ix}   &  $\fnuvsfh/\fnuvobs$ &  $-1.03\times 10^{-1}$ &  $1.59\times 10^{-1}$ &  0.79 &  0.55, 1.14 &  $-0.24$, $+0.35$ \\[\dy]
+\tablenotemark{*}\ref{fig:x}    &  $\sfrfuv/\sfroneh$  &  $-2.46\times 10^{-1}$ &  $2.61\times 10^{-1}$ &  0.57 &  0.31, 1.04 &  $-0.26$, $+0.47$ \\[\dy]
+\tablenotemark{*}\ref{fig:xi}   &  $\sfrnuv/\sfroneh$  &   $9.27\times 10^{-2}$ &  $2.33\times 10^{-1}$ &  1.24 &  0.72, 2.12 &  $-0.52$, $+0.88$ \\[\dy]
+\tablenotemark{*}\ref{fig:xii}  &  $\sfrfuvz/\sfroneh$ &  $-1.98\times 10^{-1}$ &  $2.39\times 10^{-1}$ &  0.63 &  0.37, 1.10 &  $-0.27$, $+0.47$ \\[\dy]
+\tablenotemark{*}\ref{fig:xiii} &  $\sfrnuvz/\sfroneh$ &   $9.43\times 10^{-3}$ &  $2.08\times 10^{-1}$ &  1.02 &  0.63, 1.65 &  $-0.39$, $+0.63$
+\enddata
+\tablenotetext{a}{$\mu$ and $\sigma$ represent the location and scale parameters
+    of the quantity's log-normal distrubution.}
+\tablenotetext{b}{Calculated from the location parameter as $10^{\mu}$.}
+\tablenotetext{c}{Lower and upper 68\% confidence limits, $10^{\mu\pm\sigma}$.}
+\tablenotetext{d}{Lower and upper uncertainties as the difference between the
+    median and the 68\% confidence limits.}
+\tablenotetext{*}{Statistics apply only to pixels with $\sfroneh \ge
+    10^{-5}\msun\yr^{-1}$.}
+\end{deluxetable*}
